@@ -10,7 +10,5 @@ public class SsuRentalApplication {
 		SpringApplication.run(SsuRentalApplication.class, args);
 	}
 
-	//123123
-	//1123123
 
 }
