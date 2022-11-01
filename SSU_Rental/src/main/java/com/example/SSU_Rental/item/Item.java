@@ -20,7 +20,8 @@ import java.util.List;
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @Column(name = "item_id")
     private Long item_id;
 
     @Column
@@ -39,6 +40,7 @@ public class Item {
 
     @Column
     @ManyToOne //다대일 관계 -> 여러 item에 주인 한명
+    @JoinColumn(name = "member_id")
     private Member item_owner;
 
 }

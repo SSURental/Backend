@@ -3,6 +3,7 @@ package com.example.SSU_Rental.boardrp;
 
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.member.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,20 +18,34 @@ import javax.persistence.*;
 public class Boardrp {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardrp_id;
+    @GeneratedValue
+    @Column(name = "boardrp_id")
+    private Long id;
 
     @Column
-    @ManyToOne  // -> 댓글 여러개에 board 1개
+    @ManyToOne(fetch = FetchType.LAZY)  // -> 댓글 여러개에 board 1개
+    @JoinColumn(name = "board_id")
     private Board board;
 
 
     @Column
-    @ManyToMany  //다대일 관계 -> 댓글 여러개에 member 여러개
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column
-    private String rp_content;
+    private String content;
 
 
+    @Builder
+    public Boardrp(Long id, Board board, Member member, String content) {
+        this.id = id;
+        this.board = board;
+        this.member = member;
+        this.content = content;
+    }
+
+    public void modify(String content){
+        this.content = content;
+    }
 }
