@@ -2,7 +2,7 @@ package com.example.SSU_Rental.boardrp;
 
 
 import com.example.SSU_Rental.board.Board;
-import com.example.SSU_Rental.member.Member;
+import member.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +26,7 @@ public class Boardrp {
 
 
     @Column
-    @ManyToMany  //다대일 관계 -> 댓글 여러개에 member 여러개
+    @ManyToOne  //다대일 관계 -> 댓글 여러개에 member 여러개
     private Member member;
 
     @Column

@@ -1,7 +1,7 @@
 package com.example.SSU_Rental.rental;
 
 import com.example.SSU_Rental.item.Item;
-import com.example.SSU_Rental.member.Member;
+import member.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

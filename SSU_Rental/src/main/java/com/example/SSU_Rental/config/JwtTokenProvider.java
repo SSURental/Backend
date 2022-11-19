@@ -1,11 +1,12 @@
-package member;
+package com.example.SSU_Rental.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.security.core.Authentication;    //위에께 자동인데 저러면 오류남
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-    private String secretKey = "llshlllshlllshlllshl";
+    private String secretKey = "dsafsdedgwetwetcv";
 
     // 토큰 유효시간 30분
     private long tokenValidTime = 30 * 60 * 1000L;

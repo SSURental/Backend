@@ -1,6 +1,6 @@
 package com.example.SSU_Rental.board;
 
-import com.example.SSU_Rental.member.Member;
+import member.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
