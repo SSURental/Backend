@@ -1,4 +1,4 @@
-package com.example.SSU_Rental.member;
+package member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

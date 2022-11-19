@@ -1,7 +1,9 @@
-package member;
+package com.example.SSU_Rental.config;
 
+import com.example.SSU_Rental.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.security.core.Authentication;    //위에꺼하면 오류
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
