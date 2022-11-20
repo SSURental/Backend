@@ -1,4 +1,4 @@
-package member;
+package com.example.SSU_Rental.member;
 
 import lombok.Getter;
 import lombok.Setter;

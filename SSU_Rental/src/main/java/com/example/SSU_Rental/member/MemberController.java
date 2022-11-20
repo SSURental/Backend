@@ -1,4 +1,4 @@
-package member;
+package com.example.SSU_Rental.member;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

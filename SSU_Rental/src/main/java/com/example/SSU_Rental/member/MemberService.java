@@ -1,7 +1,6 @@
-package member;
+package com.example.SSU_Rental.member;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
