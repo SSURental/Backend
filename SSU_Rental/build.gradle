@@ -34,6 +34,7 @@ dependencies {
 
 	//swagger
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 
 
