@@ -15,11 +15,13 @@ import javax.persistence.*;
 @Entity
 public class Rating {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @Column(name = "rating_id")
     private Long rating_id;
 
     @Column
-    @ManyToOne  //다대일 관계 -> 평가 여러개에 member 1
+    @ManyToOne(fetch = FetchType.LAZY)  //다대일 관계 -> 평가 여러개에 member 1
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column

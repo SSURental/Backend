@@ -1,2 +1,3 @@
-package com.example.SSU_Rental.config.auth;public class SecurityConfig {
+package com.example.SSU_Rental.config;
+public class SecurityConfig {
 }
