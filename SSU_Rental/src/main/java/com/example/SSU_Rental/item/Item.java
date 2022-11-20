@@ -2,7 +2,7 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.enums.ItemGroup;
 import com.example.SSU_Rental.enums.ItemStatus;
-import com.example.SSU_Rental.member.Member;
+import member.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
