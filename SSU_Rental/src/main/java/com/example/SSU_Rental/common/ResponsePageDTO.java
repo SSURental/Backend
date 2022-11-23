@@ -7,7 +7,7 @@ import lombok.Data;
 import org.springframework.data.domain.Page;
 
 @Data
-public class ResponsePageDTO<DTO,EN> {
+public class ResponsePageDTO<DTO, EN> {
 
     private List<DTO> contents;
 
@@ -17,12 +17,15 @@ public class ResponsePageDTO<DTO,EN> {
 
     private int totalPage;
 
+    private boolean hasNext;
 
-    public ResponsePageDTO(Page<EN> result, Function<EN,DTO> fn){
+
+    public ResponsePageDTO(Page<EN> result, Function<EN, DTO> fn) {
         contents = result.stream().map(fn).collect(Collectors.toList());
         totalPage = result.getTotalPages();
         size = result.getPageable().getPageSize();
-        page = result.getPageable().getPageNumber()+1;
+        page = result.getPageable().getPageNumber() + 1;
+        hasNext = result.hasNext();
     }
 
 }

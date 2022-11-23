@@ -1,4 +1,4 @@
-package com.example.SSU_Rental.enums;
+package com.example.SSU_Rental.common;
 
 
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor //모든 필드 값을 파라미터로 받는 생성자를 만듦
-public enum ItemGroup {
+public enum Group {
     SCHOOL,
     STUDENT;
 }

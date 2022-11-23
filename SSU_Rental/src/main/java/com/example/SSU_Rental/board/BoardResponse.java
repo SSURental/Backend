@@ -31,7 +31,7 @@ public class BoardResponse {
 
     @Builder
     public BoardResponse(Long id, String nickname, String title, String content, int see_cnt,
-        int rec_cnt, int warn_cnt,LocalDateTime createdDate,LocalDateTime lastmodifiedDate) {
+        int rec_cnt, int warn_cnt, LocalDateTime createdDate, LocalDateTime lastmodifiedDate) {
         this.id = id;
         this.nickname = nickname;
         this.title = title;
@@ -45,7 +45,8 @@ public class BoardResponse {
 
     public static BoardResponse from(Board entity) {
         return new BoardResponse(entity.getId(), entity.getMember().getName(), entity.getTitle(),
-            entity.getContent(), entity.getSee_cnt(), entity.getRec_cnt(), entity.getWarn_cnt(), entity.getRegDate(),entity.getModDate());
+            entity.getContent(), entity.getSee_cnt(), entity.getRec_cnt(), entity.getWarn_cnt(),
+            entity.getRegDate(), entity.getModDate());
 
     }
 }

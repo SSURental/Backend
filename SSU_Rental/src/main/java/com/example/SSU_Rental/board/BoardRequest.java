@@ -1,6 +1,6 @@
 package com.example.SSU_Rental.board;
 
-import javax.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

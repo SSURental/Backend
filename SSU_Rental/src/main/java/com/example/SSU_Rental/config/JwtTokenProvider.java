@@ -1,7 +1,7 @@
 package com.example.SSU_Rental.config;
 
 
-import com.example.SSU_Rental.member.MemberService;
+import com.example.SSU_Rental.member.MemberDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,11 +22,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
+
     private String secretKey = "llshlllshlllshlllshl";
 
     // 토큰 유효시간 30분
     private long tokenValidTime = 30 * 60 * 1000L;
-    private final MemberService memberService;
+    private final MemberDetailsService memberService;
 
 
     // 객체 초기화, secretKey를 Base64로 인코딩한다.
@@ -42,18 +42,19 @@ public class JwtTokenProvider {
         claims.put("roles", roles); // 정보는 key / value 쌍으로 저장된다.
         Date now = new Date();
         return Jwts.builder()
-                .setClaims(claims) // 정보 저장
-                .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
-                .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
-                // signature 에 들어갈 secret값 세팅
-                .compact();
+            .setClaims(claims) // 정보 저장
+            .setIssuedAt(now) // 토큰 발행 시간 정보
+            .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
+            .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
+            // signature 에 들어갈 secret값 세팅
+            .compact();
     }
 
     // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = memberService.loadUserByUsername(this.getUserPk(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
+            userDetails.getAuthorities());
     }
 
     // 토큰에서 회원 정보 추출

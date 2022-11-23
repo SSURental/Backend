@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name="board")
+@Table(name = "board")
 @Entity
 public class Board extends BaseEntity {
 
@@ -50,7 +50,7 @@ public class Board extends BaseEntity {
     }
 
 
-    public static Board makeBoardOne(String title,String content,Member member){
+    public static Board makeBoardOne(String title, String content, Member member) {
         return Board.builder()
             .title(title)
             .content(content)
@@ -61,15 +61,19 @@ public class Board extends BaseEntity {
             .build();
     }
 
-    public void view(){
-        see_cnt+=1;
+    public void view() {
+        see_cnt += 1;
     }
 
-    public void recommend(){rec_cnt+=1;}
+    public void recommend() {
+        rec_cnt += 1;
+    }
 
-    public void warn(){warn_cnt+=1;}
+    public void warn() {
+        warn_cnt += 1;
+    }
 
-    public void modify(String title, String content){
+    public void modify(String title, String content) {
         this.title = title;
         this.content = content;
     }
