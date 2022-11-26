@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name="boardrp")
+@Table(name = "boardrp")
 @Entity
 public class Boardrp extends BaseEntity {
 
@@ -46,7 +46,7 @@ public class Boardrp extends BaseEntity {
         this.content = content;
     }
 
-    public void modify(String content){
+    public void modify(String content) {
         this.content = content;
     }
 }

@@ -11,4 +11,6 @@ public class RequestPageDTO {
     private int page;
 
     private int size;
+
+    private Group group;
 }

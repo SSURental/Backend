@@ -1,6 +1,6 @@
 package com.example.SSU_Rental.config;
 
-import com.example.SSU_Rental.member.MemberService;
+import com.example.SSU_Rental.member.MemberDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter { // 2
 
-    private final MemberService memberService; // 3
+    private final MemberDetailsService memberService; // 3
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override

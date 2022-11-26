@@ -11,7 +11,7 @@ public class SwaggerConfig {
 
 
     @Bean
-    public OpenAPI customOpenAPI(){
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .components(new Components())
             .info(new Info().title("SSU RENTAL API")

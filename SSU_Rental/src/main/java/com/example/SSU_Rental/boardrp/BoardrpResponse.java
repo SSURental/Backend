@@ -18,7 +18,8 @@ public class BoardrpResponse {
     private LocalDateTime lastmodifiedDate;
 
     public static BoardrpResponse from(Boardrp entity) {
-        return new BoardrpResponse(entity.getContent(),entity.getMember().getName(),entity.getRegDate(),entity.getModDate());
+        return new BoardrpResponse(entity.getContent(), entity.getMember().getName(),
+            entity.getRegDate(), entity.getModDate());
 
     }
 }

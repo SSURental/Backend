@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberDetailsService memberService;
 
     @PostMapping("/user")
-    public String signup(MemberDto memberDto) { // 회원 추가
-        memberService.save(memberDto);
+    public String signup(MemberRequest memberRequest) { // 회원 추가
+        memberService.save(memberRequest);
         return "redirect:/login";
     }
 }

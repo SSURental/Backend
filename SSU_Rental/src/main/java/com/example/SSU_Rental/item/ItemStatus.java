@@ -1,4 +1,4 @@
-package com.example.SSU_Rental.enums;
+package com.example.SSU_Rental.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
