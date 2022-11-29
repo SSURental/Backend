@@ -7,12 +7,10 @@ import com.example.SSU_Rental.member.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "boardrp")
 @Entity
@@ -23,13 +21,11 @@ public class Boardrp extends BaseEntity {
     @Column(name = "boardrp_id")
     private Long id;
 
-    @Column
     @ManyToOne(fetch = FetchType.LAZY)  // -> 댓글 여러개에 board 1개
     @JoinColumn(name = "board_id")
     private Board board;
 
 
-    @Column
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

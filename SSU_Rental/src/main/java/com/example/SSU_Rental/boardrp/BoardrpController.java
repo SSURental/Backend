@@ -27,7 +27,7 @@ public class BoardrpController {
     @PostMapping("/board/{board_id}/reply")
     public ResponseEntity<Long> register(@PathVariable Long board_id,
         @RequestBody BoardrpRequest boardrpRequest, @AuthMember Member member) {
-        Long registerId = boardrpService.register(board_id, boardrpRequest, member.getMember_id());
+        Long registerId = boardrpService.register(board_id, boardrpRequest, member.getId());
         return ResponseEntity.created(URI.create("/board/" + board_id + "/reply" + registerId))
             .body(registerId);
     }
@@ -43,7 +43,7 @@ public class BoardrpController {
     public ResponseEntity<Long> modify(@PathVariable Long board_id, @PathVariable Long reply_id,
         @RequestBody BoardrpRequest request, @AuthMember Member member) {
 
-        boardrpService.modify(board_id, reply_id, request, member.getMember_id());
+        boardrpService.modify(board_id, reply_id, request, member.getId());
         return ResponseEntity.ok().body(reply_id);
 
     }
@@ -52,7 +52,7 @@ public class BoardrpController {
     public ResponseEntity delete(@PathVariable Long board_id, @PathVariable Long reply_id,
         @AuthMember Member member) {
 
-        boardrpService.delete(board_id, reply_id, member.getMember_id());
+        boardrpService.delete(board_id, reply_id, member.getId());
         return ResponseEntity.ok().build();
     }
 }

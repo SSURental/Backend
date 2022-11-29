@@ -12,7 +12,7 @@ public class MemberController {
 
     @PostMapping("/user")
     public String signup(MemberRequest memberRequest) { // 회원 추가
-        memberService.save(memberRequest);
+
         return "redirect:/login";
     }
 }

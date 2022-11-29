@@ -30,7 +30,7 @@ public class RatingService {
 
         Rating rating = Rating.makeRatingOne(member, ratingRequest);
         ratingRepository.save(rating);
-        return rating.getRating_id();
+        return rating.getId();
     }
 
     public Integer getAvgScores(Long member_id) {

@@ -19,14 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class BoardController {
 
-
     private final BoardService boardService;
 
     @PostMapping("/board")
     public ResponseEntity<Long> register(@RequestBody BoardRequest boardRequest,
         @AuthMember Member member) {
 
-        Long registerId = boardService.register(boardRequest, member.getMember_id());
+        Long registerId = boardService.register(boardRequest, member.getId());
         return ResponseEntity.created(URI.create("/board/" + registerId)).body(registerId);
 
     }
@@ -61,13 +60,13 @@ public class BoardController {
     public ResponseEntity<Long> modify(@PathVariable Long board_id,
         @RequestBody BoardRequest boardRequest, @AuthMember Member member) {
 
-        boardService.modify(board_id, boardRequest, member.getMember_id());
+        boardService.modify(board_id, boardRequest, member.getId());
         return ResponseEntity.ok().body(board_id);
     }
 
     @DeleteMapping("/board/{board_id}")
     public ResponseEntity delete(@PathVariable Long board_id, @AuthMember Member member) {
-        boardService.delete(board_id, member.getMember_id());
+        boardService.delete(board_id, member.getId());
         return ResponseEntity.ok().build();
     }
 }

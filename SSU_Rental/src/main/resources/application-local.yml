@@ -12,6 +12,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+#      ddl-auto: create
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+
+  servlet:
+    multipart:
+      enabled: true
+#      location: C:\\upload
+      max-request-size: 30MB
+      max-file-size: 10MB
+
+
+#file
+# dir: C:\\upload

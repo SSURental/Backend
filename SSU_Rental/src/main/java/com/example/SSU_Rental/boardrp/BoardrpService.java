@@ -93,7 +93,7 @@ public class BoardrpService {
             throw new RuntimeException("없는 댓글입니다.");
         }
 
-        if (boardrp.getMember().getMember_id() != member.getMember_id()) {
+        if (boardrp.getMember().getId() != member.getId()) {
             throw new RuntimeException("수정할 권한이 없습니다.");
         }
 

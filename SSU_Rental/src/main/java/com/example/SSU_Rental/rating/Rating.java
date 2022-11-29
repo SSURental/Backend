@@ -19,9 +19,8 @@ public class Rating {
     @Id
     @GeneratedValue
     @Column(name = "rating_id")
-    private Long rating_id;
+    private Long id;
 
-    @Column
     @ManyToOne(fetch = FetchType.LAZY)  //다대일 관계 -> 평가 여러개에 member 1
     @JoinColumn(name = "member_id")
     private Member member;
@@ -33,8 +32,8 @@ public class Rating {
     private int rt_score;
 
     @Builder
-    public Rating(Long rating_id, Member member, String rt_content, int rt_score) {
-        this.rating_id = rating_id;
+    public Rating(Long id, Member member, String rt_content, int rt_score) {
+        this.id = id;
         this.member = member;
         this.rt_content = rt_content;
         this.rt_score = rt_score;
