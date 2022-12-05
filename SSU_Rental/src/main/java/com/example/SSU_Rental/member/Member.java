@@ -1,62 +1,76 @@
 package com.example.SSU_Rental.member;
-
 import com.example.SSU_Rental.common.Group;
+import com.example.SSU_Rental.image.MemberImage;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "member")
 @Entity
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long member_id;
+    @Column(name = "member_id")
+    private Long id;
 
     @Column(unique = true)
-    private String login_id;
+    private String loginId;
 
     @Column
-    private String pw;
+    private String password;
 
     @Column
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private Group group;
+    private Group memberGroup;
+
+    @OneToOne(
+        cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
+        orphanRemoval = true,
+        fetch = FetchType.LAZY,
+        mappedBy = "member"
+    )
+    private MemberImage memberImage;
 
 
     @Builder
-    public Member(Long member_id, String login_id, String pw, String name, Group group) {
-        this.member_id = member_id;
-        this.login_id = login_id;
-        this.pw = pw;
+    public Member(Long id, String loginId, String password, String name, Group memberGroup) {
+        this.id = id;
+        this.loginId = loginId;
+        this.password = password;
         this.name = name;
-        this.group = group;
+        this.memberGroup = memberGroup;
     }
 
-    public static Member makeMemberOne(PasswordEncoder passwordEncoder,
+    public static Member createMember(PasswordEncoder passwordEncoder,
         MemberRequest memberRequest) {
-        return Member.builder()
-            .login_id(memberRequest.getLogin_id())
-            .pw(passwordEncoder.encode(memberRequest.getPw()))
+        Member member = Member.builder()
+            .loginId(memberRequest.getLoginId())
+            .password(passwordEncoder.encode(memberRequest.getPassword()))
             .name(memberRequest.getName())
-            .group(memberRequest.getGroup())
+            .memberGroup(memberRequest.getMemberGroup())
             .build();
+
+        MemberImage memberImage = MemberImage.builder()
+            .imgName(memberRequest.getImageDTO().getImgName())
+            .build();
+
+        member.addImage(memberImage);
+        return  member;
     }
+
+    private void addImage(MemberImage memberImage) {
+        this.memberImage = memberImage;
+        memberImage.addMember(this);
+    }
+
+
 
 
 }

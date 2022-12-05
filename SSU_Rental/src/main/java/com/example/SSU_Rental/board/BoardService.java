@@ -70,7 +70,7 @@ public class BoardService {
         Member member = getMember(member_id);
 
         Board board = validateBoard(board_id, member);
-        board.modify(board.getTitle(), board.getContent());
+        board.modify(boardRequest.getTitle(), boardRequest.getContent());
     }
 
     @Transactional(readOnly = false)
@@ -98,8 +98,8 @@ public class BoardService {
     private Board validateBoard(Long board_id, Member member) {
         Board board = getBoardOne(board_id);
 
-        if (board.getMember().getMember_id() != member.getMember_id()) {
-            throw new RuntimeException("삭제할 권한이 없습니다.");
+        if (board.getMember().getId() != member.getId()) {
+            throw new RuntimeException("접근 권한이 없습니다.");
         }
 
         return board;

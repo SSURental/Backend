@@ -36,6 +36,11 @@ dependencies {
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
+	// https://mvnrepository.com/artifact/net.coobird/thumbnailator
+	implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.18'
+
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 
 	annotationProcessor 'org.projectlombok:lombok'

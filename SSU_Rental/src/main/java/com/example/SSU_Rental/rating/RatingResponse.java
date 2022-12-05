@@ -1,13 +1,16 @@
 package com.example.SSU_Rental.rating;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
 public class RatingResponse {
 
+    @Schema(description = "리뷰 점수")
     private int score;
 
+    @Schema(description = "리뷰 내용")
     private String content;
 
 
@@ -17,7 +20,7 @@ public class RatingResponse {
     }
 
     public static RatingResponse from(Rating entity) {
-        return new RatingResponse(entity.getRt_score(), entity.getRt_content());
+        return new RatingResponse(entity.getScore(), entity.getContent());
 
     }
 }
