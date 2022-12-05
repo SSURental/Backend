@@ -11,8 +11,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
-    @Query("select avg(r.rt_score) from Rating r where r.member =:member")
-    Optional<Integer> findByMemberForAvg(@Param("member") Member member);
+    @Query("select avg(r.score) from Rating r where r.member =:member")
+    Optional<Double> findByMemberForAvg(@Param("member") Member member);
 
     Page<Rating> findByMember(Member member, Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com.example.SSU_Rental.board;
 
 import com.example.SSU_Rental.boardrp.Boardrp;
 import com.example.SSU_Rental.boardrp.BoardrpResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,22 +12,31 @@ import lombok.Getter;
 public class BoardResponse {
 
 
+    @Schema(description = "게시글 아이디")
     private Long id;
 
+    @Schema(description = "게시글 작성자 이름")
     private String nickname;
 
+    @Schema(description = "게시글 제목")
     private String title;
 
+    @Schema(description = "게시글 내용")
     private String content;
 
+    @Schema(description = "게시글 조회수")
     private int see_cnt; // 조회수
 
+    @Schema(description = "게시글 추천수")
     private int rec_cnt; // 추천수
 
+    @Schema(description = "게시글 신고받은 횟수")
     private int warn_cnt; // 신고받은횟수
 
+    @Schema(description = "게시글 작성 날짜")
     private LocalDateTime createdDate;
 
+    @Schema(description = "게시글 수정 날짜")
     private LocalDateTime lastmodifiedDate;
 
     @Builder

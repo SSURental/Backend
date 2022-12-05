@@ -1,10 +1,7 @@
 package com.example.SSU_Rental.item;
 
-import com.example.SSU_Rental.boardrp.Boardrp;
-import com.example.SSU_Rental.boardrp.BoardrpResponse;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
@@ -12,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,17 +29,16 @@ public class ItemService {
     public Long register(ItemRequest itemRequest, Long member_id) {
 
         Member member = getMember(member_id);
-        Item item = Item.makeItemOne(itemRequest, member);
+        Item item = Item.createItem(itemRequest, member);
         itemRepository.save(item);
         return item.getId();
     }
 
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
-        Pageable pageRequest = PageRequest.of(requestPageDTO.getPage() - 1,
+        Pageable pageable = PageRequest.of(requestPageDTO.getPage() - 1,
             requestPageDTO.getSize());
-        Page<Object[]> pageResult = itemRepository.findByItem_statusAndAndItem_group(
-            ItemStatus.AVAILABLE, requestPageDTO.getGroup(), pageRequest);
+        Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,requestPageDTO.getGroup(), pageable);
         Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],(List<ItemImage>)(Arrays.asList((ItemImage)obj[1]))));
         return new ResponsePageDTO(pageResult, fn);
 
@@ -84,7 +80,7 @@ public class ItemService {
     }
 
     private void validateItem(Item item, Member member) {
-        if (item.getItem_owner().getId() != member.getId()) {
+        if (item.getMember().getId() != member.getId()) {
             throw new IllegalArgumentException("없는 권한입니다.");
         }
     }

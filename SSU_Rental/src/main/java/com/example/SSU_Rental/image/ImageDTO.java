@@ -1,39 +1,18 @@
 package com.example.SSU_Rental.image;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 
-@Data
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @AllArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ImageDTO {
 
-    private String fileName;
-
-    private String uuid;
-
-    private String folderPath;
-
-    public String getImageURL(){
-        try {
-            return URLEncoder.encode(folderPath+"/"+uuid+"_"+fileName,"UTF-8");
-        }catch (UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public String getThumbnailURL(){
-        try {
-            return URLEncoder.encode(folderPath+"/"+"s_"+uuid+"_"+fileName,"UTF-8");
-        }catch (UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
-        return "";
-    }
+   @Schema(description = "사진 URL")
+   private String imgName;
 
 
 }

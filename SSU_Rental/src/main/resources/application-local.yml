@@ -3,6 +3,9 @@ spring:
   config:
     activate:
       on-profile: local
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
   datasource:
     url: ${LOCAL_DATASOURCE_URL}
@@ -19,10 +22,26 @@ spring:
   servlet:
     multipart:
       enabled: true
-#      location: C:\\upload
       max-request-size: 30MB
       max-file-size: 10MB
 
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: ssu-rental-bucket
+    stack:
+      auto: false
+    credentials:
+      access-key: ${LOCAL_ACCESS_KEY}
+      secret-key: ${LOCAL_SECRET_KEY}
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 
-#file
-# dir: C:\\upload
+
+

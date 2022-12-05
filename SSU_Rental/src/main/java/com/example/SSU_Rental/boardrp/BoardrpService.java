@@ -90,7 +90,7 @@ public class BoardrpService {
             .orElseThrow(() -> new RuntimeException("없는 댓글입니다."));
 
         if (boardrp.getBoard().getId() != board_id) {
-            throw new RuntimeException("없는 댓글입니다.");
+            throw new RuntimeException("없는 게시글입니다.");
         }
 
         if (boardrp.getMember().getId() != member.getId()) {

@@ -33,10 +33,10 @@ public class RatingService {
         return rating.getId();
     }
 
-    public Integer getAvgScores(Long member_id) {
+    public Double getAvgScores(Long member_id) {
         Member member = getMember(member_id);
 
-        Optional<Integer> avgScore = ratingRepository.findByMemberForAvg(member);
+        Optional<Double> avgScore = ratingRepository.findByMemberForAvg(member);
         return avgScore.orElseThrow(() -> new IllegalArgumentException("없는 점수입니다."));
     }
 

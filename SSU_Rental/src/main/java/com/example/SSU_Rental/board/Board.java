@@ -2,6 +2,7 @@ package com.example.SSU_Rental.board;
 
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.member.Member;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,8 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Getter
-@NoArgsConstructor
-@Table(name = "board")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Board extends BaseEntity {
 

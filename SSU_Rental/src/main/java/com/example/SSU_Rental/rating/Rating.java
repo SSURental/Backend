@@ -1,6 +1,7 @@
 package com.example.SSU_Rental.rating;
 
 import com.example.SSU_Rental.member.Member;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@Table(name = "rating")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Rating {
 
@@ -26,25 +26,25 @@ public class Rating {
     private Member member;
 
     @Column
-    private String rt_content;
+    private String content;
 
     @Column
-    private int rt_score;
+    private int score;
 
     @Builder
-    public Rating(Long id, Member member, String rt_content, int rt_score) {
+    public Rating(Long id, Member member, String content, int score) {
         this.id = id;
         this.member = member;
-        this.rt_content = rt_content;
-        this.rt_score = rt_score;
+        this.content = content;
+        this.score = score;
     }
 
 
     public static Rating makeRatingOne(Member member, RatingRequest ratingRequest) {
         return Rating.builder()
             .member(member)
-            .rt_content(ratingRequest.getContent())
-            .rt_score(ratingRequest.getScore())
+            .content(ratingRequest.getContent())
+            .score(ratingRequest.getScore())
             .build();
     }
 }

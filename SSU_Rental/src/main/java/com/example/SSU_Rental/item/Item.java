@@ -19,7 +19,6 @@ import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "item")
 @Entity
 public class Item extends BaseEntity {
 
@@ -28,19 +27,19 @@ public class Item extends BaseEntity {
     @Column(name = "item_id")
     private Long id;
 
-    private String item_name;
+    private String itemName;
 
     @Enumerated(EnumType.STRING)
-    private Group item_group;
+    private Group itemGroup;
 
     @Enumerated(EnumType.STRING)
-    private ItemStatus item_status;
+    private ItemStatus status;
 
     private int price;
 
     @ManyToOne(fetch = FetchType.LAZY) //다대일 관계 -> 여러 item에 주인 한명
     @JoinColumn(name = "member_id")
-    private Member item_owner;
+    private Member member;
 
     @OneToMany(
         cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
@@ -50,30 +49,28 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
-    public Item(Long id, String item_name, Group item_group,
-        ItemStatus item_status, int price, Member item_owner,List<ItemImage> itemImages) {
+    public Item(Long id, String itemName, Group group,
+        ItemStatus status, int price, Member member,List<ItemImage> itemImages) {
         this.id = id;
-        this.item_name = item_name;
-        this.item_group = item_group;
-        this.item_status = item_status;
+        this.itemName = itemName;
+        this.itemGroup = group;
+        this.status = status;
         this.price = price;
-        this.item_owner = item_owner;
+        this.member = member;
     }
 
-    public static Item makeItemOne(ItemRequest itemRequest, Member member) {
+    public static Item createItem(ItemRequest itemRequest, Member member) {
         Item item = Item.builder()
-            .item_name(itemRequest.getName())
+            .itemName(itemRequest.getItemName())
             .price(itemRequest.getPrice())
-            .item_group(member.getGroup())
-            .item_status(ItemStatus.AVAILABLE)
-            .item_owner(member)
+            .group(member.getMemberGroup())
+            .status(ItemStatus.AVAILABLE)
+            .member(member)
             .build();
 
         List<ItemImage> itemImages = itemRequest.getImageDTOList().stream().map(dto -> {
             return ItemImage.builder()
-                .path(dto.getFolderPath())
-                .uuid(dto.getUuid())
-                .imgName(dto.getFileName())
+                .imgName(dto.getImgName())
                 .build();
         }).collect(Collectors.toList());
 
@@ -89,8 +86,9 @@ public class Item extends BaseEntity {
     }
 
     public void modify(ItemRequest itemRequest) {
-        this.item_name = itemRequest.getName();
+        this.itemName = itemRequest.getItemName();
         this.price = itemRequest.getPrice();
+
     }
 
 

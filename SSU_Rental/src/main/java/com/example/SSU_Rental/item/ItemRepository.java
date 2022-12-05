@@ -14,12 +14,12 @@ import org.springframework.data.repository.query.Param;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
 
-    @EntityGraph(attributePaths = {"item_owner"},type = EntityGraphType.LOAD)
-    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.item_status =:status and i.item_group =:group")
-    Page<Object[]> findByItem_statusAndAndItem_group(@Param("status") ItemStatus status,@Param("group") Group group, Pageable pageable);
+    @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
+    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.status =:status and i.itemGroup =:itemGroup group by i order by i.id desc ")
+    Page<Object[]> getListPage(@Param("status") ItemStatus status,@Param("itemGroup") Group itemGroup, Pageable pageable);
 
 
-    @EntityGraph(attributePaths = {"item_owner"},type = EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
     @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.id =:item_id")
     List<Object[]> getItemWithImage(@Param("item_id")Long item_id);
 

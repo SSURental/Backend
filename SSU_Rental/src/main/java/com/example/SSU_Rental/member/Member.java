@@ -10,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "member")
 @Entity
 public class Member {
 
@@ -23,14 +22,13 @@ public class Member {
     private String loginId;
 
     @Column
-    private String pw;
+    private String password;
 
     @Column
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private Group group;
-
+    private Group memberGroup;
 
     @OneToOne(
         cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
@@ -42,27 +40,25 @@ public class Member {
 
 
     @Builder
-    public Member(Long member_id, String loginId, String pw, String name, Group group) {
+    public Member(Long id, String loginId, String password, String name, Group memberGroup) {
         this.id = id;
         this.loginId = loginId;
-        this.pw = pw;
+        this.password = password;
         this.name = name;
-        this.group = group;
+        this.memberGroup = memberGroup;
     }
 
-    public static Member makeMemberOne(PasswordEncoder passwordEncoder,
+    public static Member createMember(PasswordEncoder passwordEncoder,
         MemberRequest memberRequest) {
         Member member = Member.builder()
-            .loginId(memberRequest.getLogin_id())
-            .pw(passwordEncoder.encode(memberRequest.getPw()))
+            .loginId(memberRequest.getLoginId())
+            .password(passwordEncoder.encode(memberRequest.getPassword()))
             .name(memberRequest.getName())
-            .group(memberRequest.getGroup())
+            .memberGroup(memberRequest.getMemberGroup())
             .build();
 
         MemberImage memberImage = MemberImage.builder()
-            .imgName(memberRequest.getImageDTO().getFileName())
-            .uuid(memberRequest.getImageDTO().getUuid())
-            .path(memberRequest.getImageDTO().getFolderPath())
+            .imgName(memberRequest.getImageDTO().getImgName())
             .build();
 
         member.addImage(memberImage);
@@ -73,6 +69,8 @@ public class Member {
         this.memberImage = memberImage;
         memberImage.addMember(this);
     }
+
+
 
 
 }

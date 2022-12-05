@@ -11,8 +11,8 @@ public class MemberAuthDTO extends User {
     private Member member;
 
     public MemberAuthDTO(Member member) {
-        super(member.getLoginId(), member.getPw(),
-            List.of(new SimpleGrantedAuthority("ROLE_" + member.getGroup().name())));
+        super(member.getLoginId(), member.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_" + member.getMemberGroup().name())));
         this.member = member;
     }
 
