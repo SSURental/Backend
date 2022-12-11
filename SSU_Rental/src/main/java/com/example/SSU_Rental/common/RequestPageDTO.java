@@ -5,6 +5,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Getter
 @AllArgsConstructor
@@ -20,4 +23,16 @@ public class RequestPageDTO {
 
     @Schema(description = "SCHOOL or STUDENT",type = "String",example = "SCHOOL")
     private Group group;
+
+    @Schema(description = "정렬 기준",type = "String",example = "id")
+    private String sort;
+
+
+    public Pageable getPageable(){
+        if(sort==null){
+            return PageRequest.of(this.page-1,this.size);
+        }else {
+            return PageRequest.of(this.page-1,this.size, Sort.by(this.sort).descending());
+        }
+    }
 }

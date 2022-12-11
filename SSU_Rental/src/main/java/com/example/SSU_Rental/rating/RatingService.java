@@ -1,9 +1,15 @@
 package com.example.SSU_Rental.rating;
 
+import static com.example.SSU_Rental.exception.ErrorMessage.*;
+
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.board.BoardResponse;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.item.Item;
+import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import java.util.Optional;
@@ -22,42 +28,72 @@ public class RatingService {
 
     private final MemberRepository memberRepository;
     private final RatingRepository ratingRepository;
+    private final ItemRepository itemRepository;
 
     @Transactional
-    public Long register(Long member_id, RatingRequest ratingRequest) {
+    public Long register(Long itemId, RatingRequest ratingRequest,Long memberId) {
 
-        Member member = getMember(member_id);
+        Member member = getMember(memberId);
+        Item item = getItem(itemId);
 
-        Rating rating = Rating.makeRatingOne(member, ratingRequest);
+        Rating rating = Rating.makeRatingOne(member,item,ratingRequest);
         ratingRepository.save(rating);
         return rating.getId();
     }
 
-    public Double getAvgScores(Long member_id) {
-        Member member = getMember(member_id);
+    public Double getAvgScores(Long itemId) {
+        Item item = getItem(itemId);
 
-        Optional<Double> avgScore = ratingRepository.findByMemberForAvg(member);
-        return avgScore.orElseThrow(() -> new IllegalArgumentException("없는 점수입니다."));
+        return ratingRepository.findByItemForAvg(item).orElseThrow(()->new IllegalArgumentException("점수가 없습니다."));
     }
 
-    public ResponsePageDTO getRatingList(Long member_id, RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getList(Long itemId, RequestPageDTO requestPageDTO) {
 
-        Member member = getMember(member_id);
+        Item item = getItem(itemId);
 
-        Pageable pageRequest = PageRequest.of(requestPageDTO.getPage() - 1,
-            requestPageDTO.getSize());
-
-        Page<Rating> resultPage = ratingRepository.findByMember(member, pageRequest);
+        Page<Rating> resultPage = ratingRepository.findByItem(item, requestPageDTO.getPageable());
 
         Function<Rating, RatingResponse> fn = (entity -> RatingResponse.from(entity));
         return new ResponsePageDTO(resultPage, fn);
     }
 
+//    사용하지 않은 기능 삭제
+//    @Transactional
+//    public void modify(Long itemId,Long ratingId, Long memberId,RatingRequest ratingRequest) {
+//        Item item = getItem(itemId);
+//        Member member = getMember(memberId);
+//        Rating rating = getRating(ratingId);
+//        rating.validate(member,item);
+//        rating.modify(ratingRequest);
+//        return;
+//    }
 
-    public Member getMember(Long member_id) {
 
-        return memberRepository.findById(member_id)
-            .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
+    @Transactional
+    public void remove(Long itemId,Long ratingId, Long memberId) {
+        Item item = getItem(itemId);
+        Member member = getMember(memberId);
+        Rating rating = getRating(ratingId);
+        rating.validate(member,item);
+        ratingRepository.delete(rating);
+
     }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_ERROR));
+    }
+
+    private Item getItem(Long itemId){
+        return itemRepository.findById(itemId)
+            .orElseThrow(()->new CustomException(ITEM_NOT_FOUND_ERROR));
+    }
+
+    private Rating getRating(Long ratingId){
+        return ratingRepository.findById(ratingId)
+            .orElseThrow(()->new CustomException(RATING_NOT_FOUND_ERROR));
+    }
+
+
 
 }

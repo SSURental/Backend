@@ -1,7 +1,11 @@
 package com.example.SSU_Rental.item;
 
+import static com.example.SSU_Rental.exception.ErrorMessage.*;
+
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
@@ -26,9 +30,9 @@ public class ItemService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = false)
-    public Long register(ItemRequest itemRequest, Long member_id) {
+    public Long register(ItemRequest itemRequest, Long memberId) {
 
-        Member member = getMember(member_id);
+        Member member = getMember(memberId);
         Item item = Item.createItem(itemRequest, member);
         itemRepository.save(item);
         return item.getId();
@@ -36,18 +40,16 @@ public class ItemService {
 
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
-        Pageable pageable = PageRequest.of(requestPageDTO.getPage() - 1,
-            requestPageDTO.getSize());
-        Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,requestPageDTO.getGroup(), pageable);
+        Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,requestPageDTO.getGroup(), requestPageDTO.getPageable());
         Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],(List<ItemImage>)(Arrays.asList((ItemImage)obj[1]))));
         return new ResponsePageDTO(pageResult, fn);
 
     }
 
 
-    public ItemResponse getOne(Long item_id) {
+    public ItemResponse getOne(Long itemId) {
 
-        List<Object[]> result = itemRepository.getItemWithImage(item_id);
+        List<Object[]> result = itemRepository.getItemWithImage(itemId);
 
         List<ItemImage> imageList = new ArrayList<>();
         result.forEach(arr->{
@@ -59,42 +61,36 @@ public class ItemService {
         return ItemResponse.from((Item) result.get(0)[0],imageList);
     }
 
+//    사용하지 않은 기능 삭제
+//    @Transactional(readOnly = false)
+//    public void modify(Long itemId, ItemRequest itemRequest, Long memberId) {
+//        Member member = getMember(memberId);
+//        Item item = getItem(itemId);
+//        item.validate(member);
+//        item.modify(itemRequest);
+//        return;
+//    }
 
     @Transactional(readOnly = false)
-    public void modify(Long item_id, ItemRequest itemRequest, Long member_id) {
-        Member member = getMember(member_id);
-        Item item = getItem(item_id);
-        validateItem(item, member);
-        item.modify(itemRequest);
-        return;
-    }
+    public void delete(Long itemId, Long memberId) {
 
-    @Transactional(readOnly = false)
-    public void delete(Long item_id, Long member_id) {
-
-        Member member = getMember(member_id);
-        Item item = getItem(item_id);
-
-        validateItem(item, member);
+        Member member = getMember(memberId);
+        Item item = getItem(itemId);
+        item.validate(member);
         itemRepository.delete(item);
     }
 
-    private void validateItem(Item item, Member member) {
-        if (item.getMember().getId() != member.getId()) {
-            throw new IllegalArgumentException("없는 권한입니다.");
-        }
+
+
+    private Member getMember(Long memberId) {
+
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
     }
 
-
-    private Member getMember(Long member_id) {
-
-        return memberRepository.findById(member_id)
-            .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
-    }
-
-    private Item getItem(Long item_id) {
-        return itemRepository.findById(item_id)
-            .orElseThrow(() -> new IllegalArgumentException("없는 아이템 입니다."));
+    private Item getItem(Long itemId) {
+        return itemRepository.findById(itemId)
+            .orElseThrow(() -> new CustomException((ITEM_NOT_FOUND_ERROR)));
     }
 
 

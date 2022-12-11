@@ -55,7 +55,7 @@ public class SecurityConfig { // 2
             .and()
             .authorizeRequests()
             .antMatchers("/login","/members").permitAll()
-            .anyRequest().permitAll()
+            .anyRequest().authenticated()
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),UsernamePasswordAuthenticationFilter.class);
 

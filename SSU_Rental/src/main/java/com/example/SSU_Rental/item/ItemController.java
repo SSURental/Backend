@@ -59,34 +59,23 @@ public class ItemController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",description = "특정 아이템 정보 가져오기 성공", content = @Content(schema = @Schema(implementation = ItemResponse.class)))
     })
-    @GetMapping("/items/{item_id}")
-    public ResponseEntity<ItemResponse> getOne(@Parameter(description = "아이템 ID",required = true) @PathVariable Long item_id){
-        ItemResponse itemResponse = itemService.getOne(item_id);
+    @GetMapping("/items/{itemId}")
+    public ResponseEntity<ItemResponse> getOne(@Parameter(description = "아이템 ID",required = true) @PathVariable Long itemId){
+        ItemResponse itemResponse = itemService.getOne(itemId);
 
         return ResponseEntity.ok(itemResponse);
     }
 
-    @Operation(summary = "특정 아이템 정보 수정 요청",parameters={@Parameter(in = ParameterIn.HEADER,name = "X-AUTH_TOKEN",required = true,description = "발급받은 JWT토큰")})
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",description = "특정 아이템 정보 수정  성공", content = @Content(schema = @Schema(implementation = Long.class)))
-    })
-    @PatchMapping("/items/{item_id}")
-    public ResponseEntity<Long> modify(@Parameter(description = "아이템 ID",required = true) @PathVariable Long item_id,
-        @RequestBody ItemRequest itemRequest,@Parameter(hidden = true) @AuthMember Member member) {
 
-        itemService.modify(item_id, itemRequest, member.getId());
-        return ResponseEntity.ok().body(item_id);
-
-    }
 
 
     @Operation(summary = "특정 아이템 삭제 요청",parameters={@Parameter(in = ParameterIn.HEADER,name = "X-AUTH_TOKEN",required = true,description = "발급받은 JWT토큰")})
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",description = "특정 아이템 삭제 성공")
     })
-    @DeleteMapping("/items/{item_id}")
-    public ResponseEntity delete(@Parameter(description = "아이템 ID",required = true) @PathVariable Long item_id,@Parameter(hidden = true) @AuthMember Member member) {
-        itemService.delete(item_id, member.getId());
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity delete(@Parameter(description = "아이템 ID",required = true) @PathVariable Long itemId,@Parameter(hidden = true) @AuthMember Member member) {
+        itemService.delete(itemId, member.getId());
         return ResponseEntity.ok().build();
     }
 

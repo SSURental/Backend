@@ -2,6 +2,7 @@ package com.example.SSU_Rental.item;
 
 
 import com.example.SSU_Rental.common.Group;
+import com.example.SSU_Rental.member.Member;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.status =:status and i.itemGroup =:itemGroup group by i order by i.id desc ")
     Page<Object[]> getListPage(@Param("status") ItemStatus status,@Param("itemGroup") Group itemGroup, Pageable pageable);
 
+
+    @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
+    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.member =:member group by i order by i.id desc ")
+    Page<Object[]> findByMember(@Param("member")Member member, Pageable pageable);
 
     @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
     @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.id =:item_id")

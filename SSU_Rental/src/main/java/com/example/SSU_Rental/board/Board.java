@@ -1,6 +1,10 @@
 package com.example.SSU_Rental.board;
 
+import static com.example.SSU_Rental.exception.ErrorMessage.*;
+
 import com.example.SSU_Rental.common.BaseEntity;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,24 +31,31 @@ public class Board extends BaseEntity {
 
     private String content;
 
-    private int see_cnt; // 조회수
+    private int views; // 조회수
 
-    private int rec_cnt; // 추천수
+    private int likes; // 추천수
 
-    private int warn_cnt; // 신고받은횟수
+    private int dislikes; // 싫어요
+
+    private int warns; // 신고받은횟수
+
+    private boolean blocked;
 
 
     @Builder
-    public Board(Long id, Member member, String title, String content, int see_cnt,
-        int rec_cnt, int warn_cnt) {
+    public Board(Long id, Member member, String title, String content, int views, int likes,
+        int dislikes, int warns,boolean blocked) {
         this.id = id;
         this.member = member;
         this.title = title;
         this.content = content;
-        this.see_cnt = see_cnt;
-        this.rec_cnt = rec_cnt;
-        this.warn_cnt = warn_cnt;
+        this.views = views;
+        this.likes = likes;
+        this.dislikes = dislikes;
+        this.warns = warns;
+        this.blocked = blocked;
     }
+
 
 
     public static Board makeBoardOne(String title, String content, Member member) {
@@ -52,28 +63,44 @@ public class Board extends BaseEntity {
             .title(title)
             .content(content)
             .member(member)
-            .see_cnt(0)
-            .rec_cnt(0)
-            .warn_cnt(0)
+            .views(0)
+            .likes(0)
+            .dislikes(0)
+            .warns(0)
+            .blocked(false)
             .build();
     }
 
     public void view() {
-        see_cnt += 1;
+        this.views ++;
     }
 
-    public void recommend() {
-        rec_cnt += 1;
-    }
+    public void like() {this.likes ++;}
+
+    public void dislike(){this.dislikes++;}
 
     public void warn() {
-        warn_cnt += 1;
+        this.warns ++;
+        if(this.warns>10){
+         this.blocked = true;
+        }
     }
 
-    public void modify(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public void validate(Member member){
+        if(this.member.getId()!=member.getId()){
+            throw new CustomException((FORBIDDEN_ERROR));
+        }
     }
+
+//    사용하지 않은 기능 삭제
+//    public void modify(String title, String content) {
+//        if(title!=null){
+//            this.title = title;
+//        }
+//        if(content!=null){
+//            this.content = content;
+//        }
+//    }
 
 
 }

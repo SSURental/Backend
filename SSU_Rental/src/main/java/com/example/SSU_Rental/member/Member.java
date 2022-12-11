@@ -1,5 +1,9 @@
 package com.example.SSU_Rental.member;
+import static com.example.SSU_Rental.exception.ErrorMessage.*;
+
 import com.example.SSU_Rental.common.Group;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.MemberImage;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -68,6 +72,23 @@ public class Member {
     private void addImage(MemberImage memberImage) {
         this.memberImage = memberImage;
         memberImage.addMember(this);
+    }
+
+    public void modify(Member loginMember,MemberEdit memberEdit){
+        if(this.id!=loginMember.getId()){
+            throw new CustomException(FORBIDDEN_ERROR);
+        }
+
+        if(memberEdit.getName()!=null){
+            this.name = name;
+        }
+
+        if(memberEdit.getImageDTO().getImgName()!=null){
+            MemberImage memberImage = MemberImage.builder()
+                .imgName(memberEdit.getImageDTO().getImgName())
+                .build();
+            addImage(memberImage);
+        }
     }
 
 

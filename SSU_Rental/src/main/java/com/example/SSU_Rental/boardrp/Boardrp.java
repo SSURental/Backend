@@ -1,8 +1,13 @@
 package com.example.SSU_Rental.boardrp;
 
 
+import static com.example.SSU_Rental.exception.ErrorMessage.*;
+
 import com.example.SSU_Rental.board.Board;
+import com.example.SSU_Rental.board.BoardRequest;
 import com.example.SSU_Rental.common.BaseEntity;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,7 +47,28 @@ public class Boardrp extends BaseEntity {
         this.content = content;
     }
 
-    public void modify(String content) {
-        this.content = content;
+    public static Boardrp createBoardrp(Board board,Member member, BoardrpRequest boardrpRequest){
+        return Boardrp.builder()
+            .board(board)
+            .member(member)
+            .content(boardrpRequest.getContent())
+            .build();
     }
+
+    public void validate(Member member,Board board){
+
+
+        if(this.member.getId()!=member.getId()){
+            throw new CustomException((FORBIDDEN_ERROR));
+        }
+
+        if(this.board.getId()!=board.getId()){
+            throw new IllegalArgumentException("댓글 아이디 혹은 게시글 아이디가 잘못되었습니다.");
+        }
+    }
+
+//    사용하지 않은 기능 삭제
+//    public void modify(String content) {
+//        this.content = content;
+//    }
 }

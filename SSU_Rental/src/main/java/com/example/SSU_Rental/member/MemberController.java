@@ -1,5 +1,7 @@
 package com.example.SSU_Rental.member;
 
+import com.example.SSU_Rental.common.RequestPageDTO;
+import com.example.SSU_Rental.common.ResponsePageDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +48,61 @@ public class MemberController {
         MemberResponse response = memberService.getOne(memberId);
         return ResponseEntity.ok().body(response);
     }
+
+    /**
+     * 멤버 정보 수정 -> 이름, 속한 그룹, 이미지만 변경 가능
+     */
+
+    @PatchMapping("/members/{memberId}")
+    private ResponseEntity<Long> modify(@Parameter(description = "회원 ID",required = true) @PathVariable Long memberId,@RequestBody MemberEdit memberEdit ,@Parameter(hidden = true) @AuthMember Member member){
+        memberService.modify(memberId,memberEdit,member.getId());
+        return ResponseEntity.ok().body(memberId);
+    }
+
+    @GetMapping("/members/items")
+    private ResponseEntity<ResponsePageDTO> getMyItem(@ParameterObject RequestPageDTO requestPageDTO,@AuthMember Member member){
+        ResponsePageDTO responsePage = memberService.getMyItem(requestPageDTO, member.getId());
+
+        return ResponseEntity.ok().body(responsePage);
+    }
+
+
+    /**
+     * 내가(로그인한 객체) 쓴 댓글 모음
+     * @param requestPageDTO
+     * @param member
+     * @return
+     */
+
+    @GetMapping("/members/replys")
+    private ResponseEntity<ResponsePageDTO> getMyReply(@ParameterObject RequestPageDTO requestPageDTO,@AuthMember Member member){
+        ResponsePageDTO responsePage = memberService.getMyReply(requestPageDTO, member.getId());
+
+        return ResponseEntity.ok().body(responsePage);
+    }
+
+
+
+    /**
+     * 내가(로그인한 객체) 쓴 게시글 모음
+     * @param requestPageDTO
+     * @param member
+     * @return
+     */
+
+    @GetMapping("/members/boards")
+    private ResponseEntity<ResponsePageDTO> getMyBoard(@ParameterObject RequestPageDTO requestPageDTO,@AuthMember Member member){
+        ResponsePageDTO responsePage = memberService.getMyBoard(requestPageDTO, member.getId());
+
+        return ResponseEntity.ok().body(responsePage);
+    }
+
+    @GetMapping("/members/ratings")
+    private ResponseEntity<ResponsePageDTO> getMyRating(@ParameterObject RequestPageDTO requestPageDTO,@AuthMember Member member){
+        ResponsePageDTO responsePage = memberService.getMyRating(requestPageDTO,member.getId());
+        return ResponseEntity.ok().body(responsePage);
+    }
+
 
 
 

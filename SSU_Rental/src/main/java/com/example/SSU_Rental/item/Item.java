@@ -2,12 +2,12 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.common.Group;
-import com.example.SSU_Rental.image.ImageDTO;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.member.Member;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -85,12 +85,39 @@ public class Item extends BaseEntity {
         itemImage.addItem(this);
     }
 
-    public void modify(ItemRequest itemRequest) {
-        this.itemName = itemRequest.getItemName();
-        this.price = itemRequest.getPrice();
+    public void validate(Member member){
+        if(this.member.getId()!=member.getId())
+            throw new CustomException((ErrorMessage.FORBIDDEN_ERROR));
+    }
+
+//      사용하지 않은 기능 삭제
+//    public void modify(ItemRequest itemRequest) {
+//        this.itemName = itemRequest.getItemName();
+//        this.price = itemRequest.getPrice();
+//
+//    }
+
+
+    public void rental(Member member) {
+
+        if(this.member.getId()==member.getId()){
+            throw new IllegalArgumentException("자신의 물품은 빌릴 수는 없습니다.");
+        }
+
+        if(status!=ItemStatus.AVAILABLE){
+            throw new IllegalArgumentException("이미 렌탈중인 아이템");
+        }else {
+            this.status = ItemStatus.LOAN;
+        }
 
     }
 
+    public void returnItem() {
 
-
+        if(this.status!=ItemStatus.LOAN){
+            throw new IllegalArgumentException("에러 입니다.");
+        }else {
+            this.status = ItemStatus.AVAILABLE;
+        }
+    }
 }
