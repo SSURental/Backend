@@ -2,6 +2,7 @@ package com.example.SSU_Rental.rating;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.ErrorResponseDTO;
 import com.example.SSU_Rental.member.AuthMember;
 import com.example.SSU_Rental.member.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,12 +37,13 @@ public class RatingController {
     @Operation(summary = "리뷰 작성 요청", parameters = {
         @Parameter(in = ParameterIn.HEADER, name = "X-AUTH-TOKEN", required = true, description = "발급받은 JWT토큰")})
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "리뷰 작성 성공", content = @Content(schema = @Schema(implementation = Long.class)))
+        @ApiResponse(responseCode = "201", description = "리뷰 작성 성공", content = @Content(schema = @Schema(implementation = Long.class))),
+        @ApiResponse(responseCode = "404",description = "아이템 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/items/{itemId}/ratings")
     public ResponseEntity<Long> register(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId,
-        @RequestBody RatingRequest ratingRequest,
+        @Validated @RequestBody RatingRequest ratingRequest,
         @Parameter(hidden = true) @AuthMember Member member) {
         Long registerId = ratingService.register(itemId, ratingRequest, member.getId());
         return ResponseEntity.created(URI.create("/member/" + itemId + "/ratings/" + registerId))
@@ -48,9 +51,12 @@ public class RatingController {
 
     }
 
-    @Operation(summary = "특정 아이템이 받은 리뷰의 평균 점수 요청")
+    @Operation(summary = "특정 아이템이 받은 리뷰의 평균 점수 요청", parameters = {
+        @Parameter(in = ParameterIn.HEADER, name = "X-AUTH-TOKEN", required = true, description = "발급받은 JWT토큰")})
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "리뷰 평균 점수 받기 성공", content = @Content(schema = @Schema(implementation = Double.class)))
+        @ApiResponse(responseCode = "200", description = "리뷰 평균 점수 받기 성공", content = @Content(schema = @Schema(implementation = Double.class))),
+        @ApiResponse(responseCode = "404",description = "아이템 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
+        @ApiResponse(responseCode = "400",description = "리뷰받은 적이 없는 아이템",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/items/{itemId}/ratings/scores")
     public ResponseEntity<Double> getAvgScores(
@@ -58,15 +64,17 @@ public class RatingController {
         return ResponseEntity.ok().body(ratingService.getAvgScores(itemId));
     }
 
-    @Operation(summary = "특정 아이템이 받은 리뷰의 목록 요청")
+    @Operation(summary = "특정 아이템이 받은 리뷰의 목록 요청", parameters = {
+        @Parameter(in = ParameterIn.HEADER, name = "X-AUTH-TOKEN", required = true, description = "발급받은 JWT토큰")})
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "특정 멤버가 받은 리뷰의 목록 가져오기 성공", content = @Content(schema = @Schema(implementation = ResponsePageDTO.class)))
+        @ApiResponse(responseCode = "200", description = "특정 멤버가 받은 리뷰의 목록 가져오기 성공", content = @Content(schema = @Schema(implementation = ResponsePageDTO.class))),
+        @ApiResponse(responseCode = "404",description = "아이템 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/items/{itemId}/ratings")
     public ResponseEntity<ResponsePageDTO> getRatingList(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId,
         @ParameterObject RequestPageDTO requestPageDTO) {
-        ResponsePageDTO responsePage = ratingService.getList(itemId, requestPageDTO);
+        ResponsePageDTO responsePage = ratingService.getRentalList(itemId, requestPageDTO);
         return ResponseEntity.ok().body(responsePage);
     }
 
@@ -85,15 +93,18 @@ public class RatingController {
 //    }
 
 
-    @Operation(summary = "특정 리뷰 삭제")
+    @Operation(summary = "특정 리뷰 삭제", parameters = {
+        @Parameter(in = ParameterIn.HEADER, name = "X-AUTH-TOKEN", required = true, description = "발급받은 JWT토큰")})
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "특정 리뷰 삭제 성공")
+        @ApiResponse(responseCode = "200", description = "특정 리뷰 삭제 성공"),
+        @ApiResponse(responseCode = "404",description = "아이템 아이디 혹은 리뷰 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
+        @ApiResponse(responseCode = "403",description = "접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @DeleteMapping("/items/{itemId}/ratings/{ratingId}")
     public ResponseEntity<ResponsePageDTO> remove(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId,
         @Parameter(description = "리뷰 ID", required = true) @PathVariable Long ratingId,
-        @RequestBody RatingRequest ratingRequest, @AuthMember Member member) {
+        @Parameter(hidden = true) @AuthMember Member member) {
         ratingService.remove(itemId,ratingId, member.getId());
         return ResponseEntity.ok().build();
     }

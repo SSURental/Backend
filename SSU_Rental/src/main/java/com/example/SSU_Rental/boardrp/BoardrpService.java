@@ -41,7 +41,7 @@ public class BoardrpService {
 
     }
 
-    public ResponsePageDTO getList(Long boardId, RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getReplyList(Long boardId, RequestPageDTO requestPageDTO) {
         Board board = getBoard(boardId);
 
         Page<Boardrp> pageResult = boardrpRepository.findByBoard(board,

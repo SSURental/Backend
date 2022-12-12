@@ -41,7 +41,7 @@ public class RentalService {
 
     }
 
-    public RentalResponse getOne(Long rentalId) {
+    public RentalResponse getOne(Long itemId,Long rentalId) {
         Rental rental = getRental(rentalId);
         return RentalResponse.from(rental);
     }

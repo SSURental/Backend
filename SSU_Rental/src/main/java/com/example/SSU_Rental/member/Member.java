@@ -80,7 +80,7 @@ public class Member {
         }
 
         if(memberEdit.getName()!=null){
-            this.name = name;
+            this.name = memberEdit.getName();
         }
 
         if(memberEdit.getImageDTO().getImgName()!=null){

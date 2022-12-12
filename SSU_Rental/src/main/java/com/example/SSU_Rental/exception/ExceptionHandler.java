@@ -3,6 +3,7 @@ package com.example.SSU_Rental.exception;
 import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -19,6 +20,12 @@ public class ExceptionHandler {
         e.printStackTrace();
         ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.of(BAD_REQUEST_ERROR, e.getMessage());
         return buildResponseEntity(errorResponseDTO);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleException(final MethodArgumentNotValidException e){
+        e.printStackTrace();
+        return buildResponseEntity(ErrorResponseDTO.of(BAD_REQUEST_ERROR, e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,11 +18,11 @@ import lombok.NoArgsConstructor;
 public class ItemRequest {
 
 
-    @NotBlank
+    @NotBlank(message = "아이템 이름은 공백이 될 수 없습니다.")
     @Schema(description = "아이템 이름")
     private String itemName;
 
-    @NotBlank
+    @NotNull(message="가격을 입력해 주세요.")
     @Schema(description = "아이템 가격")
     private int price;
 

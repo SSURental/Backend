@@ -19,6 +19,9 @@ import com.example.SSU_Rental.item.ItemResponse;
 import com.example.SSU_Rental.rating.Rating;
 import com.example.SSU_Rental.rating.RatingRepository;
 import com.example.SSU_Rental.rating.RatingResponse;
+import com.example.SSU_Rental.rental.Rental;
+import com.example.SSU_Rental.rental.RentalRepository;
+import com.example.SSU_Rental.rental.RentalResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +44,7 @@ public class MemberService {
     private final BoardrpRepository boardrpRepository;
     private final ItemRepository itemRepository;
     private final RatingRepository ratingRepository;
+    private final RentalRepository rentalRepository;
 
     @Transactional
     public Long register(MemberRequest memberRequest){
@@ -77,7 +81,7 @@ public class MemberService {
         return;
     }
 
-    public ResponsePageDTO getMyItem(RequestPageDTO requestPageDTO, Long memberId) {
+    public ResponsePageDTO getMyItemList(RequestPageDTO requestPageDTO, Long memberId) {
 
         Member member = getMember(memberId);
         Page<Object[]> resultPage = itemRepository.findByMember(member, requestPageDTO.getPageable());
@@ -88,7 +92,7 @@ public class MemberService {
     }
 
 
-    public ResponsePageDTO getMyReply(RequestPageDTO requestPageDTO, Long memberId) {
+    public ResponsePageDTO getMyReplyList(RequestPageDTO requestPageDTO, Long memberId) {
 
         Member member = getMember(memberId);
 
@@ -102,7 +106,7 @@ public class MemberService {
 
     }
 
-    public ResponsePageDTO getMyBoard(RequestPageDTO requestPageDTO, Long memberId) {
+    public ResponsePageDTO getMyBoardList(RequestPageDTO requestPageDTO, Long memberId) {
         Member member = getMember(memberId);
         Page<Board> resultPage = boardRepository.findByMember(member, requestPageDTO.getPageable());
 
@@ -114,12 +118,19 @@ public class MemberService {
     }
 
 
-    public ResponsePageDTO getMyRating(RequestPageDTO requestPageDTO, Long memberId) {
+    public ResponsePageDTO getMyRatingList(RequestPageDTO requestPageDTO, Long memberId) {
         Member member = getMember(memberId);
         Page<Rating> resultPage = ratingRepository.findByMember(member, requestPageDTO.getPageable());
         Function<Rating, RatingResponse> fn = (entity->RatingResponse.from(entity));
         return new ResponsePageDTO(resultPage,fn);
 
+    }
+
+    public ResponsePageDTO getMyRentalList(RequestPageDTO requestPageDTO, Long memberId){
+        Member member = getMember(memberId);
+        Page<Rental> myRentalList = rentalRepository.findByMember(member, requestPageDTO.getPageable());
+        Function<Rental, RentalResponse> fn = (rental -> RentalResponse.from(rental));
+        return new ResponsePageDTO(myRentalList, fn);
     }
 
 

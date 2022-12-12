@@ -62,7 +62,7 @@ public class BoardService {
         return BoardResponse.from(board);
     }
 
-    public ResponsePageDTO getList(RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getBoardList(RequestPageDTO requestPageDTO) {
 
         Page<Board> resultPage = boardRepository.getListPage(requestPageDTO.getPageable());
 

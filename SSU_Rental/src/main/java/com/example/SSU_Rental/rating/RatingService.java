@@ -47,7 +47,7 @@ public class RatingService {
         return ratingRepository.findByItemForAvg(item).orElseThrow(()->new IllegalArgumentException("점수가 없습니다."));
     }
 
-    public ResponsePageDTO getList(Long itemId, RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getRentalList(Long itemId, RequestPageDTO requestPageDTO) {
 
         Item item = getItem(itemId);
 

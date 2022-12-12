@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardRequest {
 
-    @NotBlank
+    @NotBlank(message = "제목은 공백이 될 수 없습니다.")
     @Schema(description = "게시글 제목")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "내용은 공백이 될 수 없습니다.")
     @Schema(description = "게시글 내용")
     private String content;
 
