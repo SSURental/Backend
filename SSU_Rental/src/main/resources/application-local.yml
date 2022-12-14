@@ -8,9 +8,9 @@ spring:
       matching-strategy: ant_path_matcher
 
   datasource:
-    url: ${LOCAL_DATASOURCE_URL}
-    username: ${LOCAL_DATASOURCE_USERNAME}
-    password: ${LOCAL_DATASOURCE_PASSWORD}
+    url: jdbc:mariadb://ssurentaldb.ccny9xairkls.ap-northeast-2.rds.amazonaws.com:3306/ssu_rental_db
+    username: admin
+    password: ssurental01
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
@@ -34,14 +34,14 @@ cloud:
     stack:
       auto: false
     credentials:
-      access-key: ${LOCAL_ACCESS_KEY}
-      secret-key: ${LOCAL_SECRET_KEY}
-logging:
-  level:
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: error
+      access-key: AKIATLEO2CZ4VTPQB4W7
+      secret-key: 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
+#logging:
+#  level:
+#    com:
+#      amazonaws:
+#        util:
+#          EC2MetadataUtils: error
 
 
 

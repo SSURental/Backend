@@ -41,7 +41,8 @@ public class ItemService {
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
         Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,requestPageDTO.getGroup(), requestPageDTO.getPageable());
-        Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],(List<ItemImage>)(Arrays.asList((ItemImage)obj[1]))));
+        Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
+            Arrays.asList((ItemImage)obj[1])));
         return new ResponsePageDTO(pageResult, fn);
 
     }

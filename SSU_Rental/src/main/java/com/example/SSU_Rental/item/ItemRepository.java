@@ -16,12 +16,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 
     @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
-    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.status =:status and i.itemGroup =:itemGroup group by i order by i.id desc ")
+    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.status =:status and i.itemGroup =:itemGroup group by i")
     Page<Object[]> getListPage(@Param("status") ItemStatus status,@Param("itemGroup") Group itemGroup, Pageable pageable);
 
 
     @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
-    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.member =:member group by i order by i.id desc ")
+    @Query("select i,ti from Item i left outer join ItemImage ti on ti.item = i where i.member =:member group by i")
     Page<Object[]> findByMember(@Param("member")Member member, Pageable pageable);
 
     @EntityGraph(attributePaths = {"member"},type = EntityGraphType.LOAD)
