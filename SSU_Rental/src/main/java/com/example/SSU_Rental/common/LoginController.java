@@ -1,6 +1,10 @@
 package com.example.SSU_Rental.common;
 
+import static com.example.SSU_Rental.exception.ErrorMessage.*;
+
 import com.example.SSU_Rental.config.JwtTokenProvider;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,14 +36,14 @@ public class LoginController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",description = "로그인 성공-> 토큰 반환", content = @Content(schema = @Schema(implementation = String.class)))
     })
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String login(@RequestBody LoginDTO loginDTO){
 
         Member member = memberRepository.findByLoginId(loginDTO.getLoginId())
-            .orElseThrow(() -> new IllegalArgumentException("없는 아이디입니다."));
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_ERROR));
 
         if(!passwordEncoder.matches(loginDTO.getPassword(),member.getPassword())){
-            throw new IllegalArgumentException("잘못된 비밀번호");
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
         return jwtTokenProvider.createToken(member.getLoginId(),member.getMemberGroup().name());
