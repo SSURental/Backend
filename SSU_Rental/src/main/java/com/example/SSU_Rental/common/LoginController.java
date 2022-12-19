@@ -3,6 +3,7 @@ package com.example.SSU_Rental.common;
 import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
 import com.example.SSU_Rental.config.JwtTokenProvider;
+import com.example.SSU_Rental.config.LogExecutionTime;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
@@ -37,6 +38,7 @@ public class LoginController {
         @ApiResponse(responseCode = "200",description = "로그인 성공-> 토큰 반환", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping("/login")
+    @LogExecutionTime
     public String login(@RequestBody LoginDTO loginDTO){
 
         Member member = memberRepository.findByLoginId(loginDTO.getLoginId())

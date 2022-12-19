@@ -1,5 +1,6 @@
 package com.example.SSU_Rental.image;
 
+import com.example.SSU_Rental.config.LogExecutionTime;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -42,6 +43,7 @@ public class AmazonS3Controller {
         @ApiResponse(responseCode = "200",description = "아이템 등록 성공", content = @Content(schema = @Schema(implementation = List.class)))
     })
     @PostMapping(value = "/image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @LogExecutionTime
     public ResponseEntity<List<String>> uploadImage(@RequestPart List<MultipartFile> multipartFile) {
          return   ResponseEntity.ok().body(awsS3Service.uploadImage(multipartFile));
     }
@@ -56,6 +58,7 @@ public class AmazonS3Controller {
         @ApiResponse(responseCode = "200",description = "사진 삭제 성공")
     })
     @DeleteMapping("/image")
+    @LogExecutionTime
     public ResponseEntity deleteImage(@RequestParam String fileName) {
         awsS3Service.deleteImage(fileName);
         return ResponseEntity.ok().build();

@@ -1,5 +1,6 @@
 package com.example.SSU_Rental.board;
 
+import com.example.SSU_Rental.config.LogExecutionTime;
 import com.example.SSU_Rental.exception.ErrorResponseDTO;
 import com.example.SSU_Rental.member.AuthMember;
 import com.example.SSU_Rental.member.Member;
@@ -40,6 +41,7 @@ public class BoardController {
         @ApiResponse(responseCode = "201", description = "게시글 작성 성공", content = @Content(schema = @Schema(implementation = Long.class)))
     })
     @PostMapping("/boards")
+    @LogExecutionTime
     public ResponseEntity<Long> register(@Validated @RequestBody BoardRequest boardRequest,
         @Parameter(hidden = true) @AuthMember Member member) {
 
@@ -55,6 +57,7 @@ public class BoardController {
         @ApiResponse(responseCode = "404",description = "게시글 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/boards/{boardId}/like")
+    @LogExecutionTime
     public ResponseEntity<Long> like(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId) {
         boardService.like(boardId);
@@ -68,6 +71,7 @@ public class BoardController {
         @ApiResponse(responseCode = "404",description = "게시글 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/boards/{boardId}/dislike")
+    @LogExecutionTime
     public ResponseEntity<Long> dislike(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId) {
         boardService.dislike(boardId);
@@ -81,6 +85,7 @@ public class BoardController {
         @ApiResponse(responseCode = "404",description = "게시글 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/boards/{boardId}/warn")
+    @LogExecutionTime
     public ResponseEntity<Long> warn(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId) {
         boardService.warn(boardId);
@@ -94,6 +99,7 @@ public class BoardController {
         @ApiResponse(responseCode = "404",description = "게시글 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/boards/{boardId}")
+    @LogExecutionTime
     public ResponseEntity<BoardResponse> getOne(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId) {
 
@@ -114,6 +120,7 @@ public class BoardController {
         @ApiResponse(responseCode = "200", description = "게시글 목록 가져오기", content = @Content(schema = @Schema(implementation = ResponsePageDTO.class))),
         @ApiResponse(responseCode = "404",description = "게시글 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
+    @LogExecutionTime
     @GetMapping("/boards")
     public ResponseEntity<ResponsePageDTO> getList(@ParameterObject RequestPageDTO requestPageDTO) {
         ResponsePageDTO responsePage = boardService.getBoardList(requestPageDTO);
@@ -152,6 +159,7 @@ public class BoardController {
         @ApiResponse(responseCode = "404",description = "게시글 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
         @ApiResponse(responseCode = "403",description = "접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
+    @LogExecutionTime
     @DeleteMapping("/boards/{boardId}")
     public ResponseEntity delete(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId,

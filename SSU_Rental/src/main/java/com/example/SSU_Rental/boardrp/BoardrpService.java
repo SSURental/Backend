@@ -31,12 +31,10 @@ public class BoardrpService {
     public Long register(Long boardId, BoardrpRequest boardrpRequest, Long memberId) {
 
         Member member = getMember(memberId);
-
         Board board = getBoard(boardId);
-
         Boardrp boardrp = Boardrp.createBoardrp(board, member, boardrpRequest);
-
         boardrpRepository.save(boardrp);
+        board.addBoard(boardrp);
         return boardrp.getId();
 
     }
@@ -66,12 +64,12 @@ public class BoardrpService {
 //    }
 
     @Transactional
-    public void delete(Long boardId,Long replyId, Long memberId) {
+    public void delete(Long boardId, Long replyId, Long memberId) {
 
         Member member = getMember(memberId);
         Boardrp boardrp = getReply(replyId);
         Board board = getBoard(boardId);
-        boardrp.validate(member,board);
+        boardrp.validate(member, board);
         boardrpRepository.delete(boardrp);
         return;
     }

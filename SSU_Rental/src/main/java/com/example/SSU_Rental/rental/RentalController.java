@@ -3,6 +3,7 @@ package com.example.SSU_Rental.rental;
 import com.example.SSU_Rental.board.BoardResponse;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.config.LogExecutionTime;
 import com.example.SSU_Rental.exception.ErrorResponseDTO;
 import com.example.SSU_Rental.member.AuthMember;
 import com.example.SSU_Rental.member.Member;
@@ -38,6 +39,7 @@ public class RentalController {
         @ApiResponse(responseCode = "404",description = "아이템 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/items/{itemId}/rentals")
+    @LogExecutionTime
     public ResponseEntity<Long> rental(
         @Parameter(description = "렌탈할 아이템 ID", required = true) @PathVariable Long itemId,
         @Parameter(hidden = true) @AuthMember Member member) {
@@ -54,6 +56,7 @@ public class RentalController {
         @ApiResponse(responseCode = "404",description = "아이템 아이디 혹은 렌탈 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/items/{itemId}/rentals/{rentalId}")
+    @LogExecutionTime
     public ResponseEntity<RentalResponse> getOne(
         @Parameter(description = "아이템 ID", required = true) @PathVariable Long itemId,
         @Parameter(description = "렌탈 ID", required = true) @PathVariable Long rentalId) {
@@ -70,6 +73,7 @@ public class RentalController {
         @ApiResponse(responseCode = "404",description = "멤버가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/rentals")
+    @LogExecutionTime
     public ResponseEntity<ResponsePageDTO> getMyRentalList(
         @Parameter(hidden = true) @AuthMember Member member,
         @ParameterObject RequestPageDTO requestPageDTO) {
@@ -89,6 +93,7 @@ public class RentalController {
         @ApiResponse(responseCode = "403",description = "접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PatchMapping("/items/{itemId}/rentals/{rentalId}")
+    @LogExecutionTime
     public ResponseEntity<RentalResponse> extendRental(
         @Parameter(description = "아이템 ID", required = true) @PathVariable Long itemId,
         @Parameter(description = "렌탈 ID", required = true) @PathVariable Long rentalId,
@@ -105,6 +110,7 @@ public class RentalController {
         @ApiResponse(responseCode = "403",description = "접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @DeleteMapping("/items/{itemId}/rentals/{rentalId}")
+    @LogExecutionTime
     public ResponseEntity returnItem(
         @Parameter(description = "아이템 ID", required = true) @PathVariable Long itemId,
         @Parameter(description = "렌탈 ID", required = true) @PathVariable Long rentalId,

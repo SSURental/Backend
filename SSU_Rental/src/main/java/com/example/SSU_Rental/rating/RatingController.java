@@ -2,6 +2,7 @@ package com.example.SSU_Rental.rating;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.config.LogExecutionTime;
 import com.example.SSU_Rental.exception.ErrorResponseDTO;
 import com.example.SSU_Rental.member.AuthMember;
 import com.example.SSU_Rental.member.Member;
@@ -41,6 +42,7 @@ public class RatingController {
         @ApiResponse(responseCode = "404",description = "아이템 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/items/{itemId}/ratings")
+    @LogExecutionTime
     public ResponseEntity<Long> register(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId,
         @Validated @RequestBody RatingRequest ratingRequest,
@@ -59,6 +61,7 @@ public class RatingController {
         @ApiResponse(responseCode = "400",description = "리뷰받은 적이 없는 아이템",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/items/{itemId}/ratings/scores")
+    @LogExecutionTime
     public ResponseEntity<Double> getAvgScores(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId) {
         return ResponseEntity.ok().body(ratingService.getAvgScores(itemId));
@@ -71,6 +74,7 @@ public class RatingController {
         @ApiResponse(responseCode = "404",description = "아이템 아이디가 잘못되었습니다",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/items/{itemId}/ratings")
+    @LogExecutionTime
     public ResponseEntity<ResponsePageDTO> getRatingList(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId,
         @ParameterObject RequestPageDTO requestPageDTO) {
@@ -101,6 +105,7 @@ public class RatingController {
         @ApiResponse(responseCode = "403",description = "접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @DeleteMapping("/items/{itemId}/ratings/{ratingId}")
+    @LogExecutionTime
     public ResponseEntity<ResponsePageDTO> remove(
         @Parameter(description = "리뷰 받을 아이템 ID", required = true) @PathVariable Long itemId,
         @Parameter(description = "리뷰 ID", required = true) @PathVariable Long ratingId,

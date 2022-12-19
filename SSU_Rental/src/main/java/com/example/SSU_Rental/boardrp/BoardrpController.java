@@ -1,5 +1,6 @@
 package com.example.SSU_Rental.boardrp;
 
+import com.example.SSU_Rental.config.LogExecutionTime;
 import com.example.SSU_Rental.exception.ErrorResponseDTO;
 import com.example.SSU_Rental.member.AuthMember;
 import com.example.SSU_Rental.member.Member;
@@ -45,6 +46,7 @@ public class BoardrpController {
         @ApiResponse(responseCode = "404", description = "게시글 아이디가 잘못되었습니다", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping("/boards/{boardId}/replys")
+    @LogExecutionTime
     public ResponseEntity<Long> register(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId,
         @Validated @RequestBody BoardrpRequest boardrpRequest,
@@ -61,6 +63,7 @@ public class BoardrpController {
         @ApiResponse(responseCode = "404", description = "게시글 아이디가 잘못되었습니다", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping("/boards/{boardId}/replys")
+    @LogExecutionTime
     public ResponseEntity<ResponsePageDTO> getList(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId,
         @ParameterObject RequestPageDTO requestPageDTO) {
@@ -90,6 +93,7 @@ public class BoardrpController {
         @ApiResponse(responseCode = "403", description = "접근 권한이 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @DeleteMapping("/boards/{boardId}/replys/{replyId}")
+    @LogExecutionTime
     public ResponseEntity delete(
         @Parameter(description = "게시글 ID", required = true) @PathVariable Long boardId,
         @Parameter(description = "댓글 ID", required = true) @PathVariable Long replyId,

@@ -2,10 +2,13 @@ package com.example.SSU_Rental.board;
 
 import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
+import com.example.SSU_Rental.boardrp.Boardrp;
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +30,17 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+
     private String title;
 
     private String content;
+
+    @OneToMany( cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
+        orphanRemoval = true,
+        fetch = FetchType.LAZY,
+        mappedBy = "board")
+    private List<Boardrp> boardrpList = new ArrayList<>();
+
 
     private int views; // 조회수
 
@@ -84,6 +95,10 @@ public class Board extends BaseEntity {
         if(this.warns>10){
          this.blocked = true;
         }
+    }
+
+    public void addBoard(Boardrp boardrp){
+        this.boardrpList.add(boardrp);
     }
 
     public void validate(Member member){
