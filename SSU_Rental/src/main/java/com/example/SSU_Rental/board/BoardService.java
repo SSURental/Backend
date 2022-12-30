@@ -4,6 +4,7 @@ import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
@@ -26,9 +27,9 @@ public class BoardService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long register(BoardRequest boardRequest, Long memberId) {
+    public Long register(BoardRequest boardRequest, UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
 
         Board board = Board.makeBoardOne(boardRequest.getTitle(), boardRequest.getContent(),
             member);
@@ -43,7 +44,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void dislike(Long boardId){
+    public void dislike(Long boardId) {
         Board board = getBoard(boardId);
         board.dislike();
     }
@@ -73,18 +74,18 @@ public class BoardService {
 
 
     @Transactional
-    public void modify(Long boardId, BoardRequest boardRequest, Long memberId) {
+    public void modify(Long boardId, BoardRequest boardRequest, UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
         Board board = getBoard(boardId);
         board.validate(member);
         board.modify(boardRequest.getTitle(), boardRequest.getContent());
     }
 
     @Transactional
-    public void delete(Long boardId, Long memberId) {
+    public void delete(Long boardId, UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
         Board board = getBoard(boardId);
         board.validate(member);
         boardRepository.delete(board);

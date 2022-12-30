@@ -2,8 +2,7 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.member.AuthMember;
-import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.login.UserSession;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +23,9 @@ public class ItemController {
 
     @PostMapping("/items")
     public ResponseEntity<Long> register(@Validated @RequestBody ItemRequest itemRequest,
-        @AuthMember Member member) {
+        UserSession session) {
 
-        Long registerId = itemService.register(itemRequest, member.getId());
+        Long registerId = itemService.register(itemRequest, session);
         return ResponseEntity.created(URI.create("/item/" + registerId)).body(registerId);
 
     }
@@ -53,8 +52,8 @@ public class ItemController {
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity delete(
         @PathVariable Long itemId,
-        @AuthMember Member member) {
-        itemService.delete(itemId, member.getId());
+        UserSession session) {
+        itemService.delete(itemId, session);
         return ResponseEntity.ok().build();
     }
 

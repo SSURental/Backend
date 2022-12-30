@@ -2,8 +2,7 @@ package com.example.SSU_Rental.board;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.member.AuthMember;
-import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.login.UserSession;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +24,16 @@ public class BoardController {
 
     @PostMapping("/boards")
     public ResponseEntity<Long> register(@Validated @RequestBody BoardRequest boardRequest,
-        @AuthMember Member member) {
+        UserSession session) {
 
-        Long registerId = boardService.register(boardRequest, member.getId());
+        Long registerId = boardService.register(boardRequest, session);
         return ResponseEntity.created(URI.create("/board/" + registerId)).body(registerId);
 
     }
 
 
     @PostMapping("/boards/{boardId}/like")
-    public ResponseEntity<Long> like(@PathVariable Long boardId) {
+    public ResponseEntity<Long> like(@PathVariable Long boardId, UserSession session) {
         boardService.like(boardId);
         return ResponseEntity.ok().body(boardId);
     }
@@ -42,14 +41,14 @@ public class BoardController {
 
     @PostMapping("/boards/{boardId}/dislike")
     public ResponseEntity<Long> dislike(
-        @PathVariable Long boardId) {
+        @PathVariable Long boardId, UserSession session) {
         boardService.dislike(boardId);
         return ResponseEntity.ok().body(boardId);
     }
 
     @PostMapping("/boards/{boardId}/warn")
     public ResponseEntity<Long> warn(
-        @PathVariable Long boardId) {
+        @PathVariable Long boardId, UserSession session) {
         boardService.warn(boardId);
         return ResponseEntity.ok().body(boardId);
     }
@@ -80,17 +79,17 @@ public class BoardController {
 
     @PatchMapping("/boards/{boardId}")
     public ResponseEntity<Long> modify(@PathVariable Long boardId,
-        @RequestBody BoardRequest boardRequest, @AuthMember Member member) {
+        @RequestBody BoardRequest boardRequest, UserSession session) {
 
-        boardService.modify(boardId, boardRequest, member.getId());
+        boardService.modify(boardId, boardRequest, session);
         return ResponseEntity.ok().body(boardId);
     }
 
     @DeleteMapping("/boards/{boardId}")
     public ResponseEntity delete(
         @PathVariable Long boardId,
-        @AuthMember Member member) {
-        boardService.delete(boardId, member.getId());
+        UserSession session) {
+        boardService.delete(boardId, session);
         return ResponseEntity.ok().build();
     }
 }

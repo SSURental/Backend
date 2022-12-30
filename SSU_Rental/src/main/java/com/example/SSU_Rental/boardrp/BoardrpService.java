@@ -6,6 +6,7 @@ import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
@@ -27,10 +28,10 @@ public class BoardrpService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = false)
-    public Long register(Long boardId, BoardrpRequest boardrpRequest, Long memberId) {
+    @Transactional
+    public Long register(Long boardId, BoardrpRequest boardrpRequest, UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
         Board board = getBoard(boardId);
         Boardrp boardrp = Boardrp.createBoardrp(board, member, boardrpRequest);
         boardrpRepository.save(boardrp);
@@ -52,20 +53,20 @@ public class BoardrpService {
     }
 
     @Transactional
-    public void modify(Long boardId,Long replyId, BoardrpRequest request, Long member_id) {
+    public void modify(Long boardId, Long replyId, BoardrpRequest request, UserSession session) {
 
-        Member member = getMember(member_id);
+        Member member = getMember(session.getId());
         Boardrp boardrp = getReply(replyId);
         Board board = getBoard(boardId);
-        boardrp.validate(member,board);
+        boardrp.validate(member, board);
         boardrp.modify(request.getContent());
         return;
     }
 
     @Transactional
-    public void delete(Long boardId, Long replyId, Long memberId) {
+    public void delete(Long boardId, Long replyId, UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
         Boardrp boardrp = getReply(replyId);
         Board board = getBoard(boardId);
         boardrp.validate(member, board);

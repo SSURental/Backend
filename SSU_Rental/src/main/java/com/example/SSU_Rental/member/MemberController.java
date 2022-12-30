@@ -2,6 +2,7 @@ package com.example.SSU_Rental.member;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.login.UserSession;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,51 +43,40 @@ public class MemberController {
     @PatchMapping("/members/{memberId}")
     private ResponseEntity<Long> modify(
         @PathVariable Long memberId,
-        @RequestBody MemberEdit memberEdit, @AuthMember Member member) {
-        memberService.modify(memberId, memberEdit, member.getId());
+        @RequestBody MemberEdit memberEdit, UserSession session) {
+        memberService.modify(memberId, memberEdit, session);
         return ResponseEntity.ok().body(memberId);
     }
+
+    /**
+     * 여기서 부터 내가 올린 아이템 목록, 댓글 목록, 게시글 목록, 렌탈 목록, 평가 목록 확인 가능
+     */
 
     @GetMapping("/members/items")
     private ResponseEntity<ResponsePageDTO> getMyItem(
         RequestPageDTO requestPageDTO,
-        @AuthMember Member member) {
-        ResponsePageDTO responsePage = memberService.getMyItemList(requestPageDTO, member.getId());
+        UserSession session) {
+        ResponsePageDTO responsePage = memberService.getMyItemList(requestPageDTO, session);
 
         return ResponseEntity.ok().body(responsePage);
     }
 
-
-    /**
-     * 내가(로그인한 객체) 쓴 댓글 모음
-     *
-     * @param requestPageDTO
-     * @param member
-     * @return
-     */
 
     @GetMapping("/members/replys")
     private ResponseEntity<ResponsePageDTO> getMyReply(RequestPageDTO requestPageDTO,
-        @AuthMember Member member) {
-        ResponsePageDTO responsePage = memberService.getMyReplyList(requestPageDTO, member.getId());
+        UserSession session) {
+        ResponsePageDTO responsePage = memberService.getMyReplyList(requestPageDTO,
+            session);
 
         return ResponseEntity.ok().body(responsePage);
     }
-
-
-    /**
-     * 내가(로그인한 객체) 쓴 게시글 모음
-     *
-     * @param requestPageDTO
-     * @param member
-     * @return
-     */
 
 
     @GetMapping("/members/boards")
     private ResponseEntity<ResponsePageDTO> getMyBoard(RequestPageDTO requestPageDTO,
-        @AuthMember Member member) {
-        ResponsePageDTO responsePage = memberService.getMyBoardList(requestPageDTO, member.getId());
+        UserSession session) {
+        ResponsePageDTO responsePage = memberService.getMyBoardList(requestPageDTO,
+            session);
 
         return ResponseEntity.ok().body(responsePage);
     }
@@ -94,18 +84,18 @@ public class MemberController {
     @GetMapping("/members/ratings")
     private ResponseEntity<ResponsePageDTO> getMyRating(
         RequestPageDTO requestPageDTO,
-        @AuthMember Member member) {
+        UserSession session) {
         ResponsePageDTO responsePage = memberService.getMyRatingList(requestPageDTO,
-            member.getId());
+            session);
         return ResponseEntity.ok().body(responsePage);
     }
 
 
     @GetMapping("/members/rentals")
     private ResponseEntity<ResponsePageDTO> getMyRental(RequestPageDTO requestPageDTO,
-        @AuthMember Member member) {
+        UserSession session) {
         ResponsePageDTO responsePage = memberService.getMyRentalList(requestPageDTO,
-            member.getId());
+            session);
         return ResponseEntity.ok().body(responsePage);
     }
 

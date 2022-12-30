@@ -1,10 +1,5 @@
 package com.example.SSU_Rental.login;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.member.Member;
-import com.example.SSU_Rental.member.MemberRepository;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;

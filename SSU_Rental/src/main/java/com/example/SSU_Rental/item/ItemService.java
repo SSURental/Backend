@@ -7,6 +7,7 @@ import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.ItemImage;
+import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import java.util.ArrayList;
@@ -30,9 +31,9 @@ public class ItemService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = false)
-    public Long register(ItemRequest itemRequest, Long memberId) {
+    public Long register(ItemRequest itemRequest, UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
         Item item = Item.createItem(itemRequest, member);
         itemRepository.save(item);
         return item.getId();
@@ -40,9 +41,10 @@ public class ItemService {
 
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
-        Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,requestPageDTO.getGroup(), requestPageDTO.getPageable());
+        Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,
+            requestPageDTO.getGroup(), requestPageDTO.getPageable());
         Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
-            Arrays.asList((ItemImage)obj[1])));
+            Arrays.asList((ItemImage) obj[1])));
         return new ResponsePageDTO(pageResult, fn);
 
     }
@@ -53,34 +55,31 @@ public class ItemService {
         List<Object[]> result = itemRepository.getItemWithImage(itemId);
 
         List<ItemImage> imageList = new ArrayList<>();
-        result.forEach(arr->{
+        result.forEach(arr -> {
             ItemImage itemImage = (ItemImage) arr[1];
             imageList.add(itemImage);
         });
 
-
-        return ItemResponse.from((Item) result.get(0)[0],imageList);
+        return ItemResponse.from((Item) result.get(0)[0], imageList);
     }
 
-//    사용하지 않은 기능 삭제
-//    @Transactional(readOnly = false)
-//    public void modify(Long itemId, ItemRequest itemRequest, Long memberId) {
-//        Member member = getMember(memberId);
-//        Item item = getItem(itemId);
-//        item.validate(member);
-//        item.modify(itemRequest);
-//        return;
-//    }
-
     @Transactional(readOnly = false)
-    public void delete(Long itemId, Long memberId) {
+    public void modify(Long itemId, ItemRequest itemRequest, UserSession session) {
+        Member member = getMember(session.getId());
+        Item item = getItem(itemId);
+        item.validate(member);
+        item.modify(itemRequest);
+        return;
+    }
 
-        Member member = getMember(memberId);
+    @Transactional
+    public void delete(Long itemId, UserSession session) {
+
+        Member member = getMember(session.getId());
         Item item = getItem(itemId);
         item.validate(member);
         itemRepository.delete(item);
     }
-
 
 
     private Member getMember(Long memberId) {

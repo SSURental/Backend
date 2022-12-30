@@ -90,12 +90,12 @@ public class Item extends BaseEntity {
             throw new CustomException((ErrorMessage.FORBIDDEN_ERROR));
     }
 
-//      사용하지 않은 기능 삭제
-//    public void modify(ItemRequest itemRequest) {
-//        this.itemName = itemRequest.getItemName();
-//        this.price = itemRequest.getPrice();
-//
-//    }
+
+    public void modify(ItemRequest itemRequest) {
+        this.itemName = itemRequest.getItemName();
+        this.price = itemRequest.getPrice();
+
+    }
 
 
     public void rental(Member member) {

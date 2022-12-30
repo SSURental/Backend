@@ -8,6 +8,7 @@ import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
+import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import java.util.function.Function;
@@ -27,11 +28,11 @@ public class RentalService {
     private final RentalRepository rentalRepository;
 
     @Transactional
-    public Long rental(Long itemId, Long memberId) {
+    public Long rental(Long itemId, UserSession session) {
 
         Item item = getItem(itemId);
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
 
         item.rental(member);
 
@@ -46,9 +47,9 @@ public class RentalService {
         return RentalResponse.from(rental);
     }
 
-    public ResponsePageDTO getMyRentalList(Long memberId, RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getMyRentalList(RequestPageDTO requestPageDTO,UserSession session) {
 
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
 
         Page<Rental> myRentalList = rentalRepository.findByMember(member, requestPageDTO.getPageable());
 
@@ -58,11 +59,11 @@ public class RentalService {
     }
 
     @Transactional
-    public RentalResponse extendRental(Long itemId,Long rentalId, Long memberId) {
+    public RentalResponse extendRental(Long itemId,Long rentalId, UserSession session) {
 
         Item item = getItem(itemId);
         Rental rental = getRental(rentalId);
-        Member member = getMember(memberId);
+        Member member = getMember(session.getId());
         rental.validate(member,item);
         rental.extendRental();
         return RentalResponse.from(rental);
@@ -70,10 +71,10 @@ public class RentalService {
 
 
     @Transactional
-    public void returnItem(Long itemId,Long rentalId, Long memberId) {
+    public void returnItem(Long itemId,Long rentalId, UserSession session) {
         Rental rental = getRental(rentalId);
-        Member member = getMember(memberId);
-        Item item = rental.getItem();
+        Member member = getMember(session.getId());
+        Item item = getItem(itemId);
         rental.validate(member,item);
         rentalRepository.delete(rental);
         item.returnItem();

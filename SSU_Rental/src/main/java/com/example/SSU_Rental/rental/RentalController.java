@@ -2,8 +2,7 @@ package com.example.SSU_Rental.rental;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.member.AuthMember;
-import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.login.UserSession;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +23,8 @@ public class RentalController {
     @PostMapping("/items/{itemId}/rentals")
     public ResponseEntity<Long> rental(
         @PathVariable Long itemId,
-        @AuthMember Member member) {
-        Long rentalId = rentalService.rental(itemId, member.getId());
+        UserSession session) {
+        Long rentalId = rentalService.rental(itemId, session);
         return ResponseEntity.created(URI.create("/item/" + itemId + "/" + rentalId))
             .body(rentalId);
     }
@@ -44,14 +43,14 @@ public class RentalController {
 
     @GetMapping("/rentals")
     public ResponseEntity<ResponsePageDTO> getMyRentalList(
-        @AuthMember Member member,
+        UserSession session,
         RequestPageDTO requestPageDTO) {
         return ResponseEntity.ok()
-            .body(rentalService.getMyRentalList(member.getId(), requestPageDTO));
+            .body(rentalService.getMyRentalList(requestPageDTO,session));
     }
 
     /**
-     * 대여 기한 연장
+     * 대여 기한 일주일 연장
      */
 
 
@@ -59,9 +58,9 @@ public class RentalController {
     public ResponseEntity<RentalResponse> extendRental(
         @PathVariable Long itemId,
         @PathVariable Long rentalId,
-        @AuthMember Member member) {
+        UserSession session) {
         return ResponseEntity.ok()
-            .body(rentalService.extendRental(itemId, rentalId, member.getId()));
+            .body(rentalService.extendRental(itemId, rentalId, session));
     }
 
 
@@ -69,8 +68,8 @@ public class RentalController {
     public ResponseEntity returnItem(
         @PathVariable Long itemId,
         @PathVariable Long rentalId,
-        @AuthMember Member member) {
-        rentalService.returnItem(itemId, rentalId, member.getId());
+        UserSession session) {
+        rentalService.returnItem(itemId, rentalId, session);
         return ResponseEntity.ok().build();
     }
 }

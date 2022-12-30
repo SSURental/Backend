@@ -2,8 +2,7 @@ package com.example.SSU_Rental.rating;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.member.AuthMember;
-import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.login.UserSession;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +27,8 @@ public class RatingController {
     public ResponseEntity<Long> register(
         @PathVariable Long itemId,
         @Validated @RequestBody RatingRequest ratingRequest,
-        @AuthMember Member member) {
-        Long registerId = ratingService.register(itemId, ratingRequest, member.getId());
+        UserSession session) {
+        Long registerId = ratingService.register(itemId, ratingRequest, session);
         return ResponseEntity.created(URI.create("/member/" + itemId + "/ratings/" + registerId))
             .body(registerId);
 
@@ -57,8 +56,8 @@ public class RatingController {
     public ResponseEntity<ResponsePageDTO> modify(
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
-        @RequestBody RatingRequest ratingRequest, @AuthMember Member member) {
-        ratingService.modify(itemId, ratingId, member.getId(), ratingRequest);
+        @RequestBody RatingRequest ratingRequest, UserSession session) {
+        ratingService.modify(itemId, ratingId, ratingRequest, session);
         return ResponseEntity.ok().build();
     }
 
@@ -67,8 +66,8 @@ public class RatingController {
     public ResponseEntity<ResponsePageDTO> remove(
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
-        @AuthMember Member member) {
-        ratingService.remove(itemId, ratingId, member.getId());
+        UserSession session) {
+        ratingService.remove(itemId, ratingId, session);
         return ResponseEntity.ok().build();
     }
 
