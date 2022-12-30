@@ -107,15 +107,14 @@ public class Board extends BaseEntity {
         }
     }
 
-//    사용하지 않은 기능 삭제
-//    public void modify(String title, String content) {
-//        if(title!=null){
-//            this.title = title;
-//        }
-//        if(content!=null){
-//            this.content = content;
-//        }
-//    }
+    public void modify(String title, String content) {
+        if(title!=null){
+            this.title = title;
+        }
+        if(content!=null){
+            this.content = content;
+        }
+    }
 
 
 }

@@ -22,8 +22,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
@@ -32,17 +30,12 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.javassist/javassist
 	implementation group: 'org.javassist', name: 'javassist', version: '3.29.2-GA'
 
-	//swagger
-	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
-	// https://mvnrepository.com/artifact/net.coobird/thumbnailator
-	implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.18'
+
 
 
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 
 	annotationProcessor 'org.projectlombok:lombok'

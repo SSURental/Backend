@@ -18,6 +18,8 @@ public enum ErrorMessage {
 
     //Bad Request
     BAD_REQUEST_ERROR(400, BAD_REQUEST,"잘못된 요청입니다."),
+    INVALID_LOGIN_REQUEST_ERROR(400,BAD_REQUEST,"아이디 혹은 비밀번호가 잘못되었습니다."),
+    UNAUTHORIZED_ERROR(401,UNAUTHORIZED,"비인증된 사용자입니다."),
     FORBIDDEN_ERROR(403, FORBIDDEN,"해당 컨텐츠에 접근할 권한이 없습니다"),
     MEMBER_NOT_FOUND_ERROR(404, NOT_FOUND,"해당 멤버는 존재하지 않습니다."),
     ITEM_NOT_FOUND_ERROR(404, NOT_FOUND,"해당 아이템은 존재하지 않습니다."),
@@ -25,6 +27,7 @@ public enum ErrorMessage {
     REPLY_NOT_FOUND_ERROR(404,NOT_FOUND,"해당 댓글은 존재하지 않습니다."),
     RATING_NOT_FOUND_ERROR(404,NOT_FOUND,"해당 리뷰는 존재하지 않습니다."),
     RENTAL_NOT_FOUND_ERROR(404,NOT_FOUND,"해당 렌털은 존재하지 않습니다."),
+    SESSION_NOT_FOUND_ERROR(404,NOT_FOUND,"해당 세션은 존재하지 않습니다."),
 
 
 

@@ -69,14 +69,13 @@ public class Rating {
 
     }
 
-//    사용하지 않은 기능 삭제
-//    public void modify(RatingRequest ratingRequest) {
-//        if(ratingRequest.getContent()!=null){
-//            this.content = ratingRequest.getContent();
-//        }
-//
-//        if(ratingRequest.getScore()!=0){
-//            this.score = ratingRequest.getScore();
-//        }
-//    }
+    public void modify(RatingRequest ratingRequest) {
+        if(ratingRequest.getContent()!=null){
+            this.content = ratingRequest.getContent();
+        }
+
+        if(ratingRequest.getScore()!=0){
+            this.score = ratingRequest.getScore();
+        }
+    }
 }

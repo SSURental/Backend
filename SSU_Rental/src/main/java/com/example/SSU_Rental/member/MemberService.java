@@ -53,7 +53,7 @@ public class MemberService {
         if (result.isPresent()){
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
-        Member member = Member.createMember(passwordEncoder, memberRequest);
+        Member member = Member.createMember(memberRequest);
 
         memberRepository.save(member);
         return member.getId();

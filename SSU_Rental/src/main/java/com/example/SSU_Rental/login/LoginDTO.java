@@ -1,4 +1,4 @@
-package com.example.SSU_Rental.common;
+package com.example.SSU_Rental.login;
 
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;

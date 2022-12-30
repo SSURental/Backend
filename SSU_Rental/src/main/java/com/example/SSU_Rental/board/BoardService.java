@@ -72,15 +72,14 @@ public class BoardService {
     }
 
 
-//    사용하지 않은 기능이라 삭제
-//    @Transactional
-//    public void modify(Long boardId, BoardRequest boardRequest, Long memberId) {
-//
-//        Member member = getMember(memberId);
-//        Board board = getBoard(boardId);
-//        board.validate(member);
-//        board.modify(boardRequest.getTitle(), boardRequest.getContent());
-//    }
+    @Transactional
+    public void modify(Long boardId, BoardRequest boardRequest, Long memberId) {
+
+        Member member = getMember(memberId);
+        Board board = getBoard(boardId);
+        board.validate(member);
+        board.modify(boardRequest.getTitle(), boardRequest.getContent());
+    }
 
     @Transactional
     public void delete(Long boardId, Long memberId) {

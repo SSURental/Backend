@@ -51,17 +51,16 @@ public class BoardrpService {
 
     }
 
-//    사용하지 않은 기능 삭제
-//    @Transactional
-//    public void modify(Long boardId,Long replyId, BoardrpRequest request, Long member_id) {
-//
-//        Member member = getMember(member_id);
-//        Boardrp boardrp = getReply(replyId);
-//        Board board = getBoard(boardId);
-//        boardrp.validate(member,board);
-//        boardrp.modify(request.getContent());
-//        return;
-//    }
+    @Transactional
+    public void modify(Long boardId,Long replyId, BoardrpRequest request, Long member_id) {
+
+        Member member = getMember(member_id);
+        Boardrp boardrp = getReply(replyId);
+        Board board = getBoard(boardId);
+        boardrp.validate(member,board);
+        boardrp.modify(request.getContent());
+        return;
+    }
 
     @Transactional
     public void delete(Long boardId, Long replyId, Long memberId) {

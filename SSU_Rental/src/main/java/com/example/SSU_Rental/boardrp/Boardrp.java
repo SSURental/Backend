@@ -67,8 +67,7 @@ public class Boardrp extends BaseEntity {
         }
     }
 
-//    사용하지 않은 기능 삭제
-//    public void modify(String content) {
-//        this.content = content;
-//    }
+    public void modify(String content) {
+        this.content = content;
+    }
 }

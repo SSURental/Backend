@@ -57,16 +57,17 @@ public class RatingService {
         return new ResponsePageDTO(resultPage, fn);
     }
 
-//    사용하지 않은 기능 삭제
-//    @Transactional
-//    public void modify(Long itemId,Long ratingId, Long memberId,RatingRequest ratingRequest) {
-//        Item item = getItem(itemId);
-//        Member member = getMember(memberId);
-//        Rating rating = getRating(ratingId);
-//        rating.validate(member,item);
-//        rating.modify(ratingRequest);
-//        return;
-//    }
+
+    @Transactional
+    public void modify(Long itemId,Long ratingId, Long memberId,RatingRequest ratingRequest) {
+        Item item = getItem(itemId);
+        Member member = getMember(memberId);
+        Rating rating = getRating(ratingId);
+        rating.validate(member,item);
+        rating.modify(ratingRequest);
+        return;
+    }
+
 
 
     @Transactional

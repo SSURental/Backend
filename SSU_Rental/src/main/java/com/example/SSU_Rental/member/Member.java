@@ -5,6 +5,10 @@ import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.MemberImage;
+import com.example.SSU_Rental.login.Session;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +46,9 @@ public class Member {
     )
     private MemberImage memberImage;
 
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY,mappedBy = "member")
+    private List<Session> sessionList = new ArrayList<>();
+
 
     @Builder
     public Member(Long id, String loginId, String password, String name, Group memberGroup) {
@@ -52,11 +59,10 @@ public class Member {
         this.memberGroup = memberGroup;
     }
 
-    public static Member createMember(PasswordEncoder passwordEncoder,
-        MemberRequest memberRequest) {
+    public static Member createMember(MemberRequest memberRequest) {
         Member member = Member.builder()
             .loginId(memberRequest.getLoginId())
-            .password(passwordEncoder.encode(memberRequest.getPassword()))
+            .password(memberRequest.getPassword())
             .name(memberRequest.getName())
             .memberGroup(memberRequest.getMemberGroup())
             .build();
@@ -92,6 +98,12 @@ public class Member {
     }
 
 
-
-
+    public String addSession() {
+        Session session = Session.builder()
+            .accessToken(UUID.randomUUID().toString())
+            .member(this)
+            .build();
+        sessionList.add(session);
+        return session.getAccessToken();
+    }
 }
