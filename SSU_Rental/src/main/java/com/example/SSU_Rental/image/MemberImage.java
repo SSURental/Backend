@@ -29,8 +29,7 @@ public class MemberImage {
     private Member member;
 
     @Builder
-    public MemberImage(Long id, String imgName, Member member) {
-        this.id = id;
+    public MemberImage(String imgName, Member member) {
         this.imgName = imgName;
         this.member = member;
     }

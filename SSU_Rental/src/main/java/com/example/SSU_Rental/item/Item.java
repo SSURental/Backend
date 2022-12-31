@@ -5,6 +5,7 @@ import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.ItemImage;
+import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.member.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class Item extends BaseEntity {
     private Member member;
 
     @OneToMany(
-        cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
+        cascade = {CascadeType.ALL},
         orphanRemoval = true,
         mappedBy = "item"
     )
@@ -75,12 +76,12 @@ public class Item extends BaseEntity {
         }).collect(Collectors.toList());
 
         for (ItemImage itemImage : itemImages) {
-            item.addItem(itemImage);
+            item.addItemImages(itemImage);
         }
         return item;
     }
 
-    private void addItem(ItemImage itemImage) {
+    private void addItemImages(ItemImage itemImage) {
         itemImages.add(itemImage);
         itemImage.addItem(this);
     }
@@ -91,10 +92,19 @@ public class Item extends BaseEntity {
     }
 
 
-    public void modify(ItemRequest itemRequest) {
-        this.itemName = itemRequest.getItemName();
-        this.price = itemRequest.getPrice();
+    public ItemEditorBuilder toEditor(){
+        return ItemEditor.builder()
+            .itemName(itemName)
+            .price(price)
+            .itemImages(itemImages);
+    }
 
+
+    public void edit(ItemEditor itemEditor) {
+        this.itemName = itemEditor.getItemName();
+        this.price = itemEditor.getPrice();
+        this.itemImages.clear();
+        this.itemImages.addAll(itemEditor.getItemImages());
     }
 
 
@@ -120,4 +130,6 @@ public class Item extends BaseEntity {
             this.status = ItemStatus.AVAILABLE;
         }
     }
+
+
 }

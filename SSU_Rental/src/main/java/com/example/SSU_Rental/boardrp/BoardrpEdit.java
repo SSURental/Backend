@@ -1,17 +1,22 @@
 package com.example.SSU_Rental.boardrp;
 
-import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
-@AllArgsConstructor
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BoardrpRequest {
+public class BoardrpEdit {
 
-    @NotBlank(message = "내용은 공백이 될 수 없습니다.")
     private String content;
+
+    @Builder
+    public BoardrpEdit(String content) {
+        this.content = content;
+    }
+
 
 }

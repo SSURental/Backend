@@ -2,6 +2,7 @@ package com.example.SSU_Rental.board;
 
 import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
+import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.boardrp.Boardrp;
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.exception.CustomException;
@@ -107,14 +108,19 @@ public class Board extends BaseEntity {
         }
     }
 
-    public void modify(String title, String content) {
-        if(title!=null){
-            this.title = title;
-        }
-        if(content!=null){
-            this.content = content;
-        }
+    public BoardEditorBuilder toEditor(){
+        return BoardEditor
+            .builder()
+            .title(title)
+            .content(content);
     }
+
+    public void edit(BoardEditor editor) {
+        this.title = editor.getTitle();
+        this.content = editor.getContent();
+
+    }
+
 
 
 }

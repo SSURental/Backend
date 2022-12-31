@@ -2,6 +2,7 @@ package com.example.SSU_Rental.board;
 
 import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
+import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.login.UserSession;
@@ -74,12 +75,16 @@ public class BoardService {
 
 
     @Transactional
-    public void modify(Long boardId, BoardRequest boardRequest, UserSession session) {
+    public void edit(Long boardId, BoardEdit editRequest, UserSession session) {
 
         Member member = getMember(session.getId());
         Board board = getBoard(boardId);
         board.validate(member);
-        board.modify(boardRequest.getTitle(), boardRequest.getContent());
+        BoardEditorBuilder boardEditorBuilder = board.toEditor();
+        BoardEditor boardEditor = boardEditorBuilder.title(editRequest.getTitle())
+            .content(editRequest.getContent())
+            .build();
+        board.edit(boardEditor);
     }
 
     @Transactional

@@ -6,6 +6,7 @@ import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.rating.RatingEditor.RatingEditorBuilder;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -69,13 +70,14 @@ public class Rating {
 
     }
 
-    public void modify(RatingRequest ratingRequest) {
-        if(ratingRequest.getContent()!=null){
-            this.content = ratingRequest.getContent();
-        }
+    public RatingEditorBuilder toEditor(){
+        return RatingEditor.builder()
+            .content(this.content)
+            .score(this.score);
+    }
 
-        if(ratingRequest.getScore()!=0){
-            this.score = ratingRequest.getScore();
-        }
+    public void edit(RatingEditor editor){
+        this.content = editor.getContent();
+        this.score = editor.getScore();
     }
 }

@@ -53,17 +53,17 @@ public class RatingController {
 
 
     @PatchMapping("/items/{itemId}/ratings/{ratingId}")
-    public ResponseEntity<ResponsePageDTO> modify(
+    public ResponseEntity<ResponsePageDTO> edit(
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
-        @RequestBody RatingRequest ratingRequest, UserSession session) {
-        ratingService.modify(itemId, ratingId, ratingRequest, session);
+        @RequestBody RatingEdit editRequest, UserSession session) {
+        ratingService.modify(itemId, ratingId, editRequest, session);
         return ResponseEntity.ok().build();
     }
 
 
     @DeleteMapping("/items/{itemId}/ratings/{ratingId}")
-    public ResponseEntity<ResponsePageDTO> remove(
+    public ResponseEntity<ResponsePageDTO> delete(
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
         UserSession session) {

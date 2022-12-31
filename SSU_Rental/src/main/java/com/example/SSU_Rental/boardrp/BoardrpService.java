@@ -4,6 +4,7 @@ import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.board.BoardRepository;
+import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.login.UserSession;
@@ -53,13 +54,15 @@ public class BoardrpService {
     }
 
     @Transactional
-    public void modify(Long boardId, Long replyId, BoardrpRequest request, UserSession session) {
+    public void edit(Long boardId, Long replyId, BoardrpEdit  editRequest, UserSession session) {
 
         Member member = getMember(session.getId());
         Boardrp boardrp = getReply(replyId);
         Board board = getBoard(boardId);
         boardrp.validate(member, board);
-        boardrp.modify(request.getContent());
+        BoardrpEditorBuilder boardrpEditorBuilder = boardrp.toEditor();
+        BoardrpEditor editor = boardrpEditorBuilder.content(editRequest.getContent()).build();
+        boardrp.edit(editor);
         return;
     }
 

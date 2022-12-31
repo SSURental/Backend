@@ -8,8 +8,8 @@ import org.hibernate.validator.constraints.Range;
 public class RatingRequest {
 
 
-    @Range(min = 0,max = 10,message = "리뷰 점수는 0~10점 사이 입니다.")
-    private int score;
+    @Range(min = 1,max = 10,message = "리뷰 점수는 0~10점 사이 입니다.")
+    private Integer score;
 
     @NotBlank(message = "리뷰는 공백이 될 수 없습니다.")
     private String content;

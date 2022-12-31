@@ -30,12 +30,12 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request =(HttpServletRequest) webRequest;
-        if(request==null){
+        HttpServletRequest servletRequest =webRequest.getNativeRequest(HttpServletRequest.class);
+        if(servletRequest==null){
             log.error("HttpServletRequest null");
             throw new CustomException(UNAUTHORIZED_ERROR);
         }
-        Cookie[] cookies = request.getCookies();
+        Cookie[] cookies = servletRequest.getCookies();
         if(cookies.length==0){
             log.error("쿠키가 존재하지 않습니다.");
             throw new CustomException(UNAUTHORIZED_ERROR); // 쿠키X -> 로그인 경험 X -> 비인증된 사용자

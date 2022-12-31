@@ -7,6 +7,7 @@ import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.ItemImage;
+import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,12 +65,23 @@ public class ItemService {
         return ItemResponse.from((Item) result.get(0)[0], imageList);
     }
 
-    @Transactional(readOnly = false)
-    public void modify(Long itemId, ItemRequest itemRequest, UserSession session) {
+    @Transactional
+    public void edit(Long itemId, ItemEdit editRequest, UserSession session) {
         Member member = getMember(session.getId());
         Item item = getItem(itemId);
         item.validate(member);
-        item.modify(itemRequest);
+        ItemEditorBuilder itemEditorBuilder = item.toEditor();
+
+        List<ItemImage> itemImages = editRequest.getImageDTOList().stream().map(imageDTO -> {
+            return new ItemImage(imageDTO.getImgName(),item);
+        }).collect(Collectors.toList());
+
+        ItemEditor itemEditor = itemEditorBuilder.itemName(editRequest.getItemName())
+            .price(editRequest.getPrice())
+            .itemImages(itemImages)
+            .build();
+
+        item.edit(itemEditor);
         return;
     }
 
@@ -92,6 +105,7 @@ public class ItemService {
         return itemRepository.findById(itemId)
             .orElseThrow(() -> new CustomException((ITEM_NOT_FOUND_ERROR)));
     }
+
 
 
 }

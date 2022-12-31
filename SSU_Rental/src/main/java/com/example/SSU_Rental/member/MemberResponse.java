@@ -15,18 +15,18 @@ public class MemberResponse {
 
     private String name;
 
-    private Group memberGroup;
+    private String group;
 
     private ImageDTO imageDTO;
 
 
     @Builder
     public MemberResponse(Long id, String loginId, String name,
-        Group memberGroup, ImageDTO imageDTO) {
+        String group, ImageDTO imageDTO) {
         this.id = id;
         this.loginId = loginId;
         this.name = name;
-        this.memberGroup = memberGroup;
+        this.group = group;
         this.imageDTO = imageDTO;
     }
 
@@ -37,7 +37,7 @@ public class MemberResponse {
             .id(member.getId())
             .loginId(member.getLoginId())
             .name(member.getName())
-            .memberGroup(member.getMemberGroup())
+            .group(member.getMemberGroup().getValue())
             .imageDTO(imageDTO)
             .build();
     }

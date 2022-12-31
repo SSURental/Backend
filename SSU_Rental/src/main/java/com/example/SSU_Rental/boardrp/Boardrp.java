@@ -4,7 +4,9 @@ package com.example.SSU_Rental.boardrp;
 import static com.example.SSU_Rental.exception.ErrorMessage.*;
 
 import com.example.SSU_Rental.board.Board;
+import com.example.SSU_Rental.board.BoardEditor;
 import com.example.SSU_Rental.board.BoardRequest;
+import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.exception.ErrorMessage;
@@ -67,7 +69,13 @@ public class Boardrp extends BaseEntity {
         }
     }
 
-    public void modify(String content) {
-        this.content = content;
+
+    public BoardrpEditorBuilder  toEditor() {
+        return BoardrpEditor.builder()
+            .content(this.content);
+    }
+
+    public void edit(BoardrpEditor editor){
+        this.content = editor.getContent();
     }
 }

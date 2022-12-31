@@ -12,10 +12,12 @@ import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.image.ItemImage;
+import com.example.SSU_Rental.image.MemberImage;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.item.ItemResponse;
 import com.example.SSU_Rental.login.UserSession;
+import com.example.SSU_Rental.member.MemberEditor.MemberEditorBuilder;
 import com.example.SSU_Rental.rating.Rating;
 import com.example.SSU_Rental.rating.RatingRepository;
 import com.example.SSU_Rental.rating.RatingResponse;
@@ -65,15 +67,20 @@ public class MemberService {
 
 
     @Transactional
-    public void modify(Long memberId, MemberEdit memberEdit,
-        UserSession session) {
+    public void edit(Long memberId, MemberEdit memberEdit, UserSession session) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
 
         Member loginMember = memberRepository.findById(session.getId())
             .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
 
-        member.modify(loginMember, memberEdit);
+        member.validate(loginMember);
+        MemberEditorBuilder memberEditorBuilder = member.toEditor();
+        MemberImage memberImage = new MemberImage(memberEdit.getImageDTO().getImgName(),member);
+        MemberEditor memberEditor = memberEditorBuilder.name(memberEdit.getName())
+            .memberImage(memberImage)
+            .build();
+        member.edit(memberEditor);
         return;
     }
 

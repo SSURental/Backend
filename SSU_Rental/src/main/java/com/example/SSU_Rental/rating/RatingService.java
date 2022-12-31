@@ -12,6 +12,7 @@ import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
+import com.example.SSU_Rental.rating.RatingEditor.RatingEditorBuilder;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,10 @@ public class RatingService {
 
         Member member = getMember(session.getId());
         Item item = getItem(itemId);
+
+        if(item.getMember().getId()==member.getId()){
+            throw new IllegalArgumentException("자신이 등록한 아이템에 대해 자신이 평가를 내릴 수는 없습니다.");
+        }
 
         Rating rating = Rating.makeRatingOne(member, item, ratingRequest);
         ratingRepository.save(rating);
@@ -57,13 +62,17 @@ public class RatingService {
 
 
     @Transactional
-    public void modify(Long itemId, Long ratingId, RatingRequest ratingRequest,
+    public void modify(Long itemId, Long ratingId, RatingEdit editRequest,
         UserSession session) {
         Item item = getItem(itemId);
         Member member = getMember(session.getId());
         Rating rating = getRating(ratingId);
         rating.validate(member, item);
-        rating.modify(ratingRequest);
+        RatingEditorBuilder ratingEditorBuilder = rating.toEditor();
+        RatingEditor editor = ratingEditorBuilder.content(editRequest.getContent())
+            .score(editRequest.getScore())
+            .build();
+        rating.edit(editor);
         return;
     }
 

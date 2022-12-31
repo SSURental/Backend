@@ -1,5 +1,6 @@
 package com.example.SSU_Rental.member;
 
+import com.example.SSU_Rental.common.Enum;
 import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.image.ImageDTO;
 import javax.validation.constraints.NotEmpty;
@@ -20,16 +21,17 @@ public class MemberRequest {
     @NotEmpty(message = "회원 이름은 공백이 될 수 없습니다.")
     private String name;
 
-    private Group memberGroup;
+    @Enum(enumClass = Group.class, ignoreCase = true,message = "Group에는 STUDENT, SCHOOL만 들어갈 수 있습니다.")
+    private String group;
 
     private ImageDTO imageDTO;
 
     @Builder
-    public MemberRequest(String loginId, String password, String name, Group memberGroup,ImageDTO imageDTO) {
+    public MemberRequest(String loginId, String password, String name, String group,ImageDTO imageDTO) {
         this.loginId = loginId;
         this.password = password;
         this.name = name;
-        this.memberGroup = memberGroup;
+        this.group = group;
         this.imageDTO = imageDTO;
     }
 }

@@ -78,10 +78,10 @@ public class BoardController {
 
 
     @PatchMapping("/boards/{boardId}")
-    public ResponseEntity<Long> modify(@PathVariable Long boardId,
-        @RequestBody BoardRequest boardRequest, UserSession session) {
+    public ResponseEntity<Long> edit(@PathVariable Long boardId,
+        @RequestBody BoardEdit editRequest, UserSession session) {
 
-        boardService.modify(boardId, boardRequest, session);
+        boardService.edit(boardId, editRequest, session);
         return ResponseEntity.ok().body(boardId);
     }
 
