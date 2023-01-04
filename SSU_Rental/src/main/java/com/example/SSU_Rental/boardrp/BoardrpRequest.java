@@ -1,6 +1,6 @@
 package com.example.SSU_Rental.boardrp;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardrpRequest {
 
-    @Schema(description = "게시글 관련 댓글 내용")
+    @NotBlank(message = "내용은 공백이 될 수 없습니다.")
     private String content;
 
 }

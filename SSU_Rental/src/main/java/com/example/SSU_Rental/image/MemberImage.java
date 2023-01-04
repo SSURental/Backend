@@ -2,6 +2,7 @@ package com.example.SSU_Rental.image;
 import com.example.SSU_Rental.member.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -24,13 +25,11 @@ public class MemberImage {
 
     private String imgName;
 
-    @OneToOne
-    @JoinColumn(name = "member_id")
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "memberImage")
     private Member member;
 
     @Builder
-    public MemberImage(Long id, String imgName, Member member) {
-        this.id = id;
+    public MemberImage(String imgName, Member member) {
         this.imgName = imgName;
         this.member = member;
     }

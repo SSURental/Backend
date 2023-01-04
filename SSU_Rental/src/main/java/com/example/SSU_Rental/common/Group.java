@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor //모든 필드 값을 파라미터로 받는 생성자를 만듦
 public enum Group {
-    SCHOOL,
-    STUDENT;
+    SCHOOL("SCHOOL"),
+    STUDENT("STUDENT");
+
+    String value;
+    Group(String value) {this.value = value;}
+    public String value() {return value;}
 }

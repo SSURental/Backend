@@ -30,8 +30,7 @@ public class ItemImage {
 
 
     @Builder
-    public ItemImage(Long id, String imgName, Item item) {
-        this.id = id;
+    public ItemImage(String imgName, Item item) {
         this.imgName = imgName;
         this.item = item;
     }

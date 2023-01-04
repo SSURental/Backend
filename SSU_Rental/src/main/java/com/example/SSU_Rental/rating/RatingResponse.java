@@ -1,26 +1,28 @@
 package com.example.SSU_Rental.rating;
 
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class RatingResponse {
 
-    @Schema(description = "리뷰 점수")
+
+    private Long id;
+
     private int score;
 
-    @Schema(description = "리뷰 내용")
+    private String nickname;
+
     private String content;
 
+    private Long itemId;
 
-    public RatingResponse(int score, String content) {
-        this.score = score;
-        this.content = content;
-    }
+
 
     public static RatingResponse from(Rating entity) {
-        return new RatingResponse(entity.getScore(), entity.getContent());
+        return new RatingResponse(entity.getId(), entity.getScore(),entity.getMember().getName(),entity.getContent(),entity.getItem().getId());
 
     }
 }

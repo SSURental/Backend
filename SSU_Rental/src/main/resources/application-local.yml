@@ -15,9 +15,15 @@ spring:
 
   jpa:
     hibernate:
-#      ddl-auto: create
+#     ddl-auto: create
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+
+
 
   servlet:
     multipart:
