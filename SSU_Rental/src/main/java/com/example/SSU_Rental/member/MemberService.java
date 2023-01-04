@@ -25,7 +25,6 @@ import com.example.SSU_Rental.rental.Rental;
 import com.example.SSU_Rental.rental.RentalRepository;
 import com.example.SSU_Rental.rental.RentalResponse;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +75,7 @@ public class MemberService {
 
         member.validate(loginMember);
         MemberEditorBuilder memberEditorBuilder = member.toEditor();
-        MemberImage memberImage = new MemberImage(memberEdit.getImageDTO().getImgName(),member);
+        MemberImage memberImage = new MemberImage(memberEdit.getImageDTO().getImgName(), member);
         MemberEditor memberEditor = memberEditorBuilder.name(memberEdit.getName())
             .memberImage(memberImage)
             .build();
@@ -87,10 +86,9 @@ public class MemberService {
     public ResponsePageDTO getMyItemList(RequestPageDTO requestPageDTO, UserSession session) {
 
         Member member = getMember(session.getId());
-        Page<Object[]> resultPage = itemRepository.findByMember(member,
-            requestPageDTO.getPageable());
+        Page<Object[]> resultPage = itemRepository.getMyItemList(member, requestPageDTO);
         Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
-            (List<ItemImage>) (Arrays.asList((ItemImage) obj[1]))));
+            Arrays.asList((ItemImage) obj[1])));
         return new ResponsePageDTO(resultPage, fn);
 
 
@@ -100,21 +98,14 @@ public class MemberService {
     public ResponsePageDTO getMyReplyList(RequestPageDTO requestPageDTO, UserSession session) {
 
         Member member = getMember(session.getId());
-
-        Page<Boardrp> resultPage = boardrpRepository.findByMember(member,
-            requestPageDTO.getPageable());
-
+        Page<Boardrp> resultPage = boardrpRepository.getMyReplyList(member, requestPageDTO);
         Function<Boardrp, BoardrpResponse> fn = (entity -> BoardrpResponse.from(entity));
-
         return new ResponsePageDTO(resultPage, fn);
-
-
     }
 
     public ResponsePageDTO getMyBoardList(RequestPageDTO requestPageDTO, UserSession session) {
         Member member = getMember(session.getId());
-        Page<Board> resultPage = boardRepository.findByMember(member, requestPageDTO.getPageable());
-
+        Page<Board> resultPage = boardRepository.getMyBoardList(member, requestPageDTO);
         Function<Board, BoardResponse> fn = (entity -> BoardResponse.from(entity));
 
         return new ResponsePageDTO(resultPage, fn);
@@ -125,8 +116,7 @@ public class MemberService {
 
     public ResponsePageDTO getMyRatingList(RequestPageDTO requestPageDTO, UserSession session) {
         Member member = getMember(session.getId());
-        Page<Rating> resultPage = ratingRepository.findByMember(member,
-            requestPageDTO.getPageable());
+        Page<Rating> resultPage = ratingRepository.getMyRatingList(member, requestPageDTO);
         Function<Rating, RatingResponse> fn = (entity -> RatingResponse.from(entity));
         return new ResponsePageDTO(resultPage, fn);
 
@@ -134,8 +124,7 @@ public class MemberService {
 
     public ResponsePageDTO getMyRentalList(RequestPageDTO requestPageDTO, UserSession session) {
         Member member = getMember(session.getId());
-        Page<Rental> myRentalList = rentalRepository.findByMember(member,
-            requestPageDTO.getPageable());
+        Page<Rental> myRentalList = rentalRepository.getList(member, requestPageDTO);
         Function<Rental, RentalResponse> fn = (rental -> RentalResponse.from(rental));
         return new ResponsePageDTO(myRentalList, fn);
     }

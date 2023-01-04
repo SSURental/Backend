@@ -24,7 +24,7 @@ public class ResponsePageDTO<DTO, EN> {
         contents = result.stream().map(fn).collect(Collectors.toList());
         totalPage = result.getTotalPages();
         size = result.getPageable().getPageSize();
-        page = result.getPageable().getPageNumber() + 1;
+        page = result.getPageable().getPageNumber()+1;
         hasNext = result.hasNext();
     }
 

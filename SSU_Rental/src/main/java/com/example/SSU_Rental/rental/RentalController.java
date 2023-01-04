@@ -42,11 +42,11 @@ public class RentalController {
      */
 
     @GetMapping("/rentals")
-    public ResponseEntity<ResponsePageDTO> getMyRentalList(
+    public ResponseEntity<ResponsePageDTO> getList(
         UserSession session,
         RequestPageDTO requestPageDTO) {
         return ResponseEntity.ok()
-            .body(rentalService.getMyRentalList(requestPageDTO,session));
+            .body(rentalService.getList(requestPageDTO,session));
     }
 
     /**

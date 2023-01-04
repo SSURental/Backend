@@ -25,7 +25,6 @@ public class BoardController {
     @PostMapping("/boards")
     public ResponseEntity<Long> register(@Validated @RequestBody BoardRequest boardRequest,
         UserSession session) {
-
         Long registerId = boardService.register(boardRequest, session);
         return ResponseEntity.created(URI.create("/board/" + registerId)).body(registerId);
 
@@ -71,8 +70,7 @@ public class BoardController {
 
     @GetMapping("/boards")
     public ResponseEntity<ResponsePageDTO> getList(RequestPageDTO requestPageDTO) {
-        ResponsePageDTO responsePage = boardService.getBoardList(requestPageDTO);
-
+        ResponsePageDTO responsePage = boardService.getList(requestPageDTO);
         return ResponseEntity.ok().body(responsePage);
     }
 

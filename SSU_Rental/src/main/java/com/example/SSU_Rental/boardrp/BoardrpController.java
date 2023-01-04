@@ -36,7 +36,7 @@ public class BoardrpController {
     @GetMapping("/boards/{boardId}/replys")
     public ResponseEntity<ResponsePageDTO> getList(@PathVariable Long boardId,
         RequestPageDTO requestPageDTO) {
-        ResponsePageDTO responsePage = boardrpService.getReplyList(boardId, requestPageDTO);
+        ResponsePageDTO responsePage = boardrpService.getList(boardId, requestPageDTO);
         return ResponseEntity.ok().body(responsePage);
     }
 

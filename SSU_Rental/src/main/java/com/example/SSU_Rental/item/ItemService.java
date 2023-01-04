@@ -1,26 +1,22 @@
 package com.example.SSU_Rental.item;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.*;
+import static com.example.SSU_Rental.exception.ErrorMessage.ITEM_NOT_FOUND_ERROR;
+import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,26 +39,16 @@ public class ItemService {
 
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
-        Page<Object[]> pageResult = itemRepository.getListPage(ItemStatus.AVAILABLE,
-            requestPageDTO.getGroup(), requestPageDTO.getPageable());
+        Page<Object[]> pageResult = itemRepository.getList(requestPageDTO);
         Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
             Arrays.asList((ItemImage) obj[1])));
         return new ResponsePageDTO(pageResult, fn);
-
     }
 
 
     public ItemResponse getOne(Long itemId) {
-
-        List<Object[]> result = itemRepository.getItemWithImage(itemId);
-
-        List<ItemImage> imageList = new ArrayList<>();
-        result.forEach(arr -> {
-            ItemImage itemImage = (ItemImage) arr[1];
-            imageList.add(itemImage);
-        });
-
-        return ItemResponse.from((Item) result.get(0)[0], imageList);
+        List<Object[]> result = itemRepository.getItem(itemId);
+        return ItemResponse.from((Item) result.get(0)[0], (List<ItemImage>) result.get(0)[1]);
     }
 
     @Transactional

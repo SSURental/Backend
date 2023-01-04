@@ -35,7 +35,6 @@ public class ItemController {
     @GetMapping("/items")
     public ResponseEntity<ResponsePageDTO> getItemList(
         RequestPageDTO requestPageDTO) {
-
         ResponsePageDTO responsePage = itemService.getItemList(requestPageDTO);
         return ResponseEntity.ok().body(responsePage);
     }

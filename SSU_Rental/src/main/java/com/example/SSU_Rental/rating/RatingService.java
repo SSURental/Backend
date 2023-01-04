@@ -50,12 +50,10 @@ public class RatingService {
             .orElseThrow(() -> new IllegalArgumentException("점수가 없습니다."));
     }
 
-    public ResponsePageDTO getRentalList(Long itemId, RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getList(Long itemId, RequestPageDTO requestPageDTO) {
 
         Item item = getItem(itemId);
-
-        Page<Rating> resultPage = ratingRepository.findByItem(item, requestPageDTO.getPageable());
-
+        Page<Rating> resultPage = ratingRepository.getList(item,requestPageDTO);
         Function<Rating, RatingResponse> fn = (entity -> RatingResponse.from(entity));
         return new ResponsePageDTO(resultPage, fn);
     }

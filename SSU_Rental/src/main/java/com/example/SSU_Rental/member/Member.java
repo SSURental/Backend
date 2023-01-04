@@ -20,6 +20,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
@@ -50,8 +51,9 @@ public class Member {
     private Group memberGroup;
 
     @OneToOne(
-        cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "member"
+        cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY
     )
+    @JoinColumn(name = "memberimage_id")
     private MemberImage memberImage;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "member")

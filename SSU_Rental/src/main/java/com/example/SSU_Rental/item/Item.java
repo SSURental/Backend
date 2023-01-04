@@ -49,6 +49,7 @@ public class Item extends BaseEntity {
     )
     private List<ItemImage> itemImages = new ArrayList<>();
 
+
     @Builder
     public Item(Long id, String itemName, Group group,
         ItemStatus status, int price, Member member,List<ItemImage> itemImages) {

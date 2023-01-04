@@ -44,10 +44,9 @@ public class RatingController {
 
 
     @GetMapping("/items/{itemId}/ratings")
-    public ResponseEntity<ResponsePageDTO> getRatingList(
-        @PathVariable Long itemId,
+    public ResponseEntity<ResponsePageDTO> getRatingList(@PathVariable Long itemId,
         RequestPageDTO requestPageDTO) {
-        ResponsePageDTO responsePage = ratingService.getRentalList(itemId, requestPageDTO);
+        ResponsePageDTO responsePage = ratingService.getList(itemId, requestPageDTO);
         return ResponseEntity.ok().body(responsePage);
     }
 

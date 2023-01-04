@@ -1,20 +1,18 @@
 package com.example.SSU_Rental.board;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.*;
+import static com.example.SSU_Rental.exception.ErrorMessage.BOARD_NOT_FOUND_ERROR;
+import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
 
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
-import com.example.SSU_Rental.login.UserSession;
-import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.login.UserSession;
+import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +29,6 @@ public class BoardService {
     public Long register(BoardRequest boardRequest, UserSession session) {
 
         Member member = getMember(session.getId());
-
         Board board = Board.makeBoardOne(boardRequest.getTitle(), boardRequest.getContent(),
             member);
         boardRepository.save(board);
@@ -64,10 +61,9 @@ public class BoardService {
         return BoardResponse.from(board);
     }
 
-    public ResponsePageDTO getBoardList(RequestPageDTO requestPageDTO) {
+    public ResponsePageDTO getList(RequestPageDTO requestPageDTO) {
 
-        Page<Board> resultPage = boardRepository.getListPage(requestPageDTO.getPageable());
-
+        Page<Board> resultPage = boardRepository.getList(requestPageDTO);
         Function<Board, BoardResponse> fn = (entity -> BoardResponse.from(entity));
         return new ResponsePageDTO(resultPage, fn);
 
