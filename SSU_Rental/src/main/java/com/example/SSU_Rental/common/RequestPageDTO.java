@@ -3,13 +3,19 @@ package com.example.SSU_Rental.common;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequestPageDTO {
 
 
