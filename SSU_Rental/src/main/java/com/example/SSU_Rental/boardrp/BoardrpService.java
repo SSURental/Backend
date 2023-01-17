@@ -1,15 +1,13 @@
 package com.example.SSU_Rental.boardrp;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.BOARD_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.REPLY_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.BoardNotFound;
+import com.example.SSU_Rental.exception.notfound.BoardrpNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
@@ -31,9 +29,9 @@ public class BoardrpService {
     @Transactional
     public Long register(Long boardId, BoardrpRequest boardrpRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Board board = getBoard(boardId);
-        Boardrp boardrp = Boardrp.createBoardrp(board, member, boardrpRequest);
+        Boardrp boardrp = Boardrp.createBoardrp(board, loginMember, boardrpRequest);
         boardrpRepository.save(boardrp);
         board.addBoard(boardrp);
         return boardrp.getId();
@@ -50,24 +48,21 @@ public class BoardrpService {
     @Transactional
     public void edit(Long boardId, Long replyId, BoardrpEdit editRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Boardrp boardrp = getReply(replyId);
         Board board = getBoard(boardId);
-        boardrp.validate(member, board);
         BoardrpEditorBuilder boardrpEditorBuilder = boardrp.toEditor();
         BoardrpEditor editor = boardrpEditorBuilder.content(editRequest.getContent()).build();
-        boardrp.edit(editor);
+        boardrp.edit(editor,loginMember,board);
         return;
     }
 
     @Transactional
     public void delete(Long boardId, Long replyId, UserSession session) {
-
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Boardrp boardrp = getReply(replyId);
         Board board = getBoard(boardId);
-        boardrp.validate(member, board);
-        boardrpRepository.delete(boardrp);
+        boardrp.delete(loginMember,board);
         return;
     }
 
@@ -75,17 +70,22 @@ public class BoardrpService {
     public Member getMember(Long memberId) {
 
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
+            .orElseThrow(() -> new MemberNotFound());
     }
 
     public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId)
-            .orElseThrow(() -> new CustomException((BOARD_NOT_FOUND_ERROR)));
+        Board findBoard = boardRepository.findById(boardId)
+            .orElseThrow(() -> new BoardNotFound());
+        if(findBoard.isDeleted()==true) throw new IllegalArgumentException("이미 삭제된 글입니다.");
+        return findBoard;
+
     }
 
     public Boardrp getReply(Long replyId) {
-        return boardrpRepository.findById(replyId)
-            .orElseThrow(() -> new CustomException((REPLY_NOT_FOUND_ERROR)));
+        Boardrp findBoardrp = boardrpRepository.findById(replyId)
+            .orElseThrow(() -> new BoardrpNotFound());
+        if(findBoardrp.isDeleted())throw new IllegalArgumentException("이미 삭제된 댓글입니다.");
+        return findBoardrp;
     }
 
 

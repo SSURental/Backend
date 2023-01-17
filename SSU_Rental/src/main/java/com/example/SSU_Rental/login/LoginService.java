@@ -1,7 +1,5 @@
 package com.example.SSU_Rental.login;
 
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

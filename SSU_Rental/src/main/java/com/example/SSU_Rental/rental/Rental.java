@@ -1,15 +1,21 @@
 package com.example.SSU_Rental.rental;
 
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
@@ -34,14 +40,17 @@ public class Rental {
 
     private LocalDateTime endDate;
 
+    private boolean isDeleted;
+
     @Builder
     public Rental(Long id, Member member, Item item, LocalDateTime startDate,
-        LocalDateTime endDate) {
+        LocalDateTime endDate,boolean isDeleted) {
         this.id = id;
         this.member = member;
         this.item = item;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.isDeleted = isDeleted;
     }
 
     public static Rental createRental(Item item, Member member) {
@@ -50,12 +59,13 @@ public class Rental {
             .item(item)
             .startDate(LocalDateTime.now())
             .endDate(LocalDateTime.now().plusDays(7))
+            .isDeleted(false)
             .build();
     }
 
-    public void validate(Member member,Item item) {
+    private void validate(Member member,Item item) {
         if(this.member.getId() != member.getId()){
-            throw new CustomException(ErrorMessage.FORBIDDEN_ERROR);
+            throw new ForbiddenException();
         }
 
         if(this.item.getId()!=item.getId()){
@@ -64,9 +74,15 @@ public class Rental {
 
     }
 
-    public void extendRental() {
-
+    public void extendRental(Member loginMember,Item item) {
+        validate(loginMember,item);
         this.endDate = this.endDate.plusDays(7);
 
+    }
+
+    public void delete(Member loginMember, Item item){
+        validate(loginMember,item);
+        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 글입니다.");
+        this.isDeleted = true;
     }
 }

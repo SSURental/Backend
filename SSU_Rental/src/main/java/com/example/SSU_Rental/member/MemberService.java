@@ -1,7 +1,5 @@
 package com.example.SSU_Rental.member;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.board.BoardResponse;
@@ -10,7 +8,7 @@ import com.example.SSU_Rental.boardrp.BoardrpRepository;
 import com.example.SSU_Rental.boardrp.BoardrpResponse;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.image.MemberImage;
 import com.example.SSU_Rental.item.Item;
@@ -73,13 +71,12 @@ public class MemberService {
         Member loginMember = memberRepository.findById(session.getId())
             .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
 
-        member.validate(loginMember);
         MemberEditorBuilder memberEditorBuilder = member.toEditor();
         MemberImage memberImage = new MemberImage(memberEdit.getImageDTO().getImgName(), member);
         MemberEditor memberEditor = memberEditorBuilder.name(memberEdit.getName())
             .memberImage(memberImage)
             .build();
-        member.edit(memberEditor);
+        member.edit(memberEditor,loginMember);
         return;
     }
 
@@ -132,7 +129,7 @@ public class MemberService {
 
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_ERROR));
+            .orElseThrow(() -> new MemberNotFound());
     }
 
 

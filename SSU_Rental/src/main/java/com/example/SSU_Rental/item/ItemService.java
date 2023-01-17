@@ -1,11 +1,9 @@
 package com.example.SSU_Rental.item;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.ITEM_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.ItemNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.login.UserSession;
@@ -28,11 +26,11 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Long register(ItemRequest itemRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
-        Item item = Item.createItem(itemRequest, member);
+        Member loginMember = getMember(session.getId());
+        Item item = Item.createItem(itemRequest, loginMember);
         itemRepository.save(item);
         return item.getId();
     }
@@ -53,9 +51,8 @@ public class ItemService {
 
     @Transactional
     public void edit(Long itemId, ItemEdit editRequest, UserSession session) {
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        item.validate(member);
         ItemEditorBuilder itemEditorBuilder = item.toEditor();
 
         List<ItemImage> itemImages = editRequest.getImageDTOList().stream().map(imageDTO -> {
@@ -67,16 +64,16 @@ public class ItemService {
             .itemImages(itemImages)
             .build();
 
-        item.edit(itemEditor);
+        item.edit(itemEditor,loginMember);
         return;
     }
 
     @Transactional
     public void delete(Long itemId, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        item.validate(member);
+        item.delete(loginMember);
         itemRepository.delete(item);
     }
 
@@ -84,12 +81,14 @@ public class ItemService {
     private Member getMember(Long memberId) {
 
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
+            .orElseThrow(() -> new MemberNotFound());
     }
 
     private Item getItem(Long itemId) {
-        return itemRepository.findById(itemId)
-            .orElseThrow(() -> new CustomException((ITEM_NOT_FOUND_ERROR)));
+        Item findItem = itemRepository.findById(itemId)
+            .orElseThrow(() -> new ItemNotFound());
+        if(findItem.isDeleted()) throw new IllegalArgumentException("이미 삭제된 아이템입니다.");
+        return findItem;
     }
 
 

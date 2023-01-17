@@ -8,7 +8,6 @@ import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.board.BoardRequest;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;

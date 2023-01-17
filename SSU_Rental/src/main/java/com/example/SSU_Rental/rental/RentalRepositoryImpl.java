@@ -24,7 +24,7 @@ public class RentalRepositoryImpl implements RentalRepositoryCustom {
         List<Rental> content = jpaQueryFactory.selectFrom(rental)
             .leftJoin(rental.member, QMember.member).fetchJoin()
             .leftJoin(rental.item, item).fetchJoin()
-            .where(rental.member.eq(member))
+            .where(rental.member.eq(member).and(rental.isDeleted.eq(false)))
             .orderBy(rental.id.desc())
             .offset(requestPageDTO.getOffset())
             .limit(requestPageDTO.getSize())

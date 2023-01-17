@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.SSU_Rental.common.Group;
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.login.LoginDTO;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;

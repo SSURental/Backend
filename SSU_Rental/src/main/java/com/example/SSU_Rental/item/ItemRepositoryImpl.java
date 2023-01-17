@@ -31,7 +31,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .leftJoin(item.member, member).fetchJoin()
             .distinct()
             .where(item.status.eq(AVAILABLE).and(item.itemGroup.eq(
-                requestPageDTO.getGroup().equals("SCHOOL") ? Group.SCHOOL : Group.STUDENT)))
+                requestPageDTO.getGroup().equals("SCHOOL") ? Group.SCHOOL : Group.STUDENT)).and(
+                item.isDeleted.eq(false)))
             .orderBy(item.id.desc())
             .offset(requestPageDTO.getOffset())
             .limit(requestPageDTO.getSize())
@@ -47,7 +48,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         JPAQuery<Long> total = jpaQueryFactory.select(item.count())
             .from(item)
             .where(item.status.eq(AVAILABLE).and(item.itemGroup.eq(
-                requestPageDTO.getGroup().equals("SCHOOL") ? Group.SCHOOL : Group.STUDENT)));
+                requestPageDTO.getGroup().equals("SCHOOL") ? Group.SCHOOL : Group.STUDENT)).and(item.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
@@ -59,7 +60,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .from(item)
             .leftJoin(item.member, QMember.member).fetchJoin()
             .distinct()
-            .where(item.member.eq(member))
+            .where(item.member.eq(member).and(item.isDeleted.eq(false)))
             .orderBy(item.id.desc())
             .offset(requestPageDTO.getOffset())
             .limit(requestPageDTO.getSize())
@@ -87,7 +88,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .from(QItem.item)
             .leftJoin(QItem.item.member, member).fetchJoin()
             .distinct()
-            .where(QItem.item.id.eq(itemId))
+            .where(QItem.item.id.eq(itemId).and(QItem.item.isDeleted.eq(false)))
             .fetchOne();
 
         Object[] objects = new Object[2];

@@ -9,6 +9,7 @@ import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -23,7 +24,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     public Page<Board> getList(RequestPageDTO requestPageDTO) {
         List<Board> content = jpaQueryFactory.selectFrom(board)
             .leftJoin(board.member, member).fetchJoin()
-            .where(board.blocked.eq(false))
+            .where(board.blocked.eq(false).and(board.isDeleted.eq(false)))
             .orderBy(board.id.desc())
             .limit(requestPageDTO.getSize())
             .offset(requestPageDTO.getOffset())
@@ -31,7 +32,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(board.count())
             .from(board)
-            .where(board.blocked.eq(false));
+            .where(board.blocked.eq(false).and(board.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
@@ -42,7 +43,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     public Page<Board> getMyBoardList(Member member, RequestPageDTO requestPageDTO) {
         List<Board> content = jpaQueryFactory.selectFrom(board)
             .leftJoin(board.member, QMember.member).fetchJoin()
-            .where(board.member.eq(member))
+            .where(board.member.eq(member).and(board.isDeleted.eq(false)))
             .orderBy(board.id.desc())
             .offset(requestPageDTO.getOffset())
             .limit(requestPageDTO.getSize())

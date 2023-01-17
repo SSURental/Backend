@@ -2,20 +2,29 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.common.Group;
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.member.Member;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 
 @Getter
@@ -50,15 +59,18 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
 
+    private boolean isDeleted;
+
     @Builder
     public Item(Long id, String itemName, Group group,
-        ItemStatus status, int price, Member member,List<ItemImage> itemImages) {
+        ItemStatus status, int price, Member member,List<ItemImage> itemImages,boolean isDeleted) {
         this.id = id;
         this.itemName = itemName;
         this.itemGroup = group;
         this.status = status;
         this.price = price;
         this.member = member;
+        this.isDeleted = isDeleted;
     }
 
     public static Item createItem(ItemRequest itemRequest, Member member) {
@@ -68,6 +80,7 @@ public class Item extends BaseEntity {
             .group(member.getMemberGroup())
             .status(ItemStatus.AVAILABLE)
             .member(member)
+            .isDeleted(false)
             .build();
 
         List<ItemImage> itemImages = itemRequest.getImageDTOList().stream().map(dto -> {
@@ -87,9 +100,9 @@ public class Item extends BaseEntity {
         itemImage.addItem(this);
     }
 
-    public void validate(Member member){
+    private void validate(Member member){
         if(this.member.getId()!=member.getId())
-            throw new CustomException((ErrorMessage.FORBIDDEN_ERROR));
+            throw new ForbiddenException();
     }
 
 
@@ -101,11 +114,18 @@ public class Item extends BaseEntity {
     }
 
 
-    public void edit(ItemEditor itemEditor) {
+    public void edit(ItemEditor itemEditor,Member loginMember) {
+        validate(loginMember);
         this.itemName = itemEditor.getItemName();
         this.price = itemEditor.getPrice();
         this.itemImages.clear();
         this.itemImages.addAll(itemEditor.getItemImages());
+    }
+
+    public void delete(Member loginMember){
+        validate(loginMember);
+        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 아이템입니다.");
+        this.isDeleted = true;
     }
 
 

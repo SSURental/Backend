@@ -56,7 +56,7 @@ public class RatingController {
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
         @RequestBody RatingEdit editRequest, UserSession session) {
-        ratingService.modify(itemId, ratingId, editRequest, session);
+        ratingService.edit(itemId, ratingId, editRequest, session);
         return ResponseEntity.ok().build();
     }
 

@@ -1,12 +1,10 @@
 package com.example.SSU_Rental.board;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.BOARD_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.BoardNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
@@ -28,8 +26,8 @@ public class BoardService {
     @Transactional
     public Long register(BoardRequest boardRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
-        Board board = Board.createBoard(boardRequest, member);
+        Member loginMember = getMember(session.getId());
+        Board board = Board.createBoard(boardRequest, loginMember);
         boardRepository.save(board);
         return board.getId();
     }
@@ -72,35 +70,35 @@ public class BoardService {
     @Transactional
     public void edit(Long boardId, BoardEdit editRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Board board = getBoard(boardId);
-        board.validate(member);
         BoardEditorBuilder boardEditorBuilder = board.toEditor();
         BoardEditor boardEditor = boardEditorBuilder.title(editRequest.getTitle())
             .content(editRequest.getContent())
             .build();
-        board.edit(boardEditor);
+        board.edit(boardEditor,loginMember);
     }
 
     @Transactional
     public void delete(Long boardId, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Board board = getBoard(boardId);
-        board.validate(member);
-        boardRepository.delete(board);
+        board.delete(loginMember);
     }
 
 
     private Member getMember(Long memberId) {
 
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
+            .orElseThrow(() -> new MemberNotFound());
     }
 
     private Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId)
-            .orElseThrow(() -> new CustomException((BOARD_NOT_FOUND_ERROR)));
+        Board findBoard = boardRepository.findById(boardId)
+            .orElseThrow(() -> new BoardNotFound());
+        if(findBoard.isDeleted()==true) throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
+        return findBoard;
     }
 
 

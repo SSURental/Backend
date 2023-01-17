@@ -1,11 +1,9 @@
 package com.example.SSU_Rental.board;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.FORBIDDEN_ERROR;
-
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.boardrp.Boardrp;
 import com.example.SSU_Rental.common.BaseEntity;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.member.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +53,14 @@ public class Board extends BaseEntity {
 
     private int warns; // 신고받은횟수
 
-    private boolean blocked;
+    private boolean blocked; // 신고 받아서 차단
+
+    private boolean isDeleted; // 삭제 된 글인지 여부
 
 
     @Builder
     public Board(Long id, Member member, String title, String content, int views, int likes,
-        int dislikes, int warns,boolean blocked) {
+        int dislikes, int warns,boolean blocked,boolean isDeleted) {
         this.id = id;
         this.member = member;
         this.title = title;
@@ -70,6 +70,7 @@ public class Board extends BaseEntity {
         this.dislikes = dislikes;
         this.warns = warns;
         this.blocked = blocked;
+        this.isDeleted = isDeleted;
     }
 
 
@@ -84,6 +85,7 @@ public class Board extends BaseEntity {
             .dislikes(0)
             .warns(0)
             .blocked(false)
+            .isDeleted(false)
             .build();
     }
 
@@ -106,9 +108,9 @@ public class Board extends BaseEntity {
         this.boardrpList.add(boardrp);
     }
 
-    public void validate(Member member){
+    private void validate(Member member){
         if(this.member.getId()!=member.getId()){
-            throw new CustomException((FORBIDDEN_ERROR));
+            throw new ForbiddenException();
         }
     }
 
@@ -119,11 +121,19 @@ public class Board extends BaseEntity {
             .content(content);
     }
 
-    public void edit(BoardEditor editor) {
+    public void edit(BoardEditor editor,Member loginMember) {
+        validate(loginMember);
         this.title = editor.getTitle();
         this.content = editor.getContent();
 
     }
+
+    public void delete(Member loginMember){
+        validate(loginMember);
+        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 글입니다.");
+        this.isDeleted = true;
+    }
+
 
 
 

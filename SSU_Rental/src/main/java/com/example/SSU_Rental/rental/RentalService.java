@@ -1,12 +1,10 @@
 package com.example.SSU_Rental.rental;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.ITEM_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.RENTAL_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.ItemNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
+import com.example.SSU_Rental.exception.notfound.RentalNotFound;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.login.UserSession;
@@ -61,8 +59,7 @@ public class RentalService {
         Item item = getItem(itemId);
         Rental rental = getRental(rentalId);
         Member member = getMember(session.getId());
-        rental.validate(member, item);
-        rental.extendRental();
+        rental.extendRental(member,item);
         return RentalResponse.from(rental);
     }
 
@@ -70,29 +67,30 @@ public class RentalService {
     @Transactional
     public void returnItem(Long itemId, Long rentalId, UserSession session) {
         Rental rental = getRental(rentalId);
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        rental.validate(member, item);
-        rentalRepository.delete(rental);
+        rental.delete(loginMember,item);
         item.returnItem();
     }
 
     private Item getItem(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-            .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND_ERROR));
-        return item;
+        Item findItem = itemRepository.findById(itemId)
+            .orElseThrow(() -> new ItemNotFound());
+        if(findItem.isDeleted()) throw new IllegalArgumentException("이미 삭제된 아이템입니다.");
+        return findItem;
     }
 
     private Member getMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
+            .orElseThrow(() -> new MemberNotFound());
         return member;
     }
 
     private Rental getRental(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId)
-            .orElseThrow(() -> new CustomException((RENTAL_NOT_FOUND_ERROR)));
-        return rental;
+        Rental findRental = rentalRepository.findById(rentalId)
+            .orElseThrow(() -> new RentalNotFound());
+        if(findRental.isDeleted()) throw new IllegalArgumentException("이미 삭제된 렌탈입니다.");
+        return findRental;
     }
 
 
