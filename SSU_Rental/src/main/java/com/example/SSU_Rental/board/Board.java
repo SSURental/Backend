@@ -1,21 +1,27 @@
 package com.example.SSU_Rental.board;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.*;
+import static com.example.SSU_Rental.exception.ErrorMessage.FORBIDDEN_ERROR;
 
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.boardrp.Boardrp;
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
 import com.example.SSU_Rental.member.Member;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,9 +42,7 @@ public class Board extends BaseEntity {
 
     private String content;
 
-    @OneToMany( cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
-        orphanRemoval = true,
-        fetch = FetchType.LAZY,
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY,
         mappedBy = "board")
     private List<Boardrp> boardrpList = new ArrayList<>();
 
@@ -70,10 +74,10 @@ public class Board extends BaseEntity {
 
 
 
-    public static Board makeBoardOne(String title, String content, Member member) {
+    public static Board createBoard(BoardRequest boardRequest, Member member) {
         return Board.builder()
-            .title(title)
-            .content(content)
+            .title(boardRequest.getTitle())
+            .content(boardRequest.getContent())
             .member(member)
             .views(0)
             .likes(0)

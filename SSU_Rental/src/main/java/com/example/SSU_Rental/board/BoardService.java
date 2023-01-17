@@ -29,8 +29,7 @@ public class BoardService {
     public Long register(BoardRequest boardRequest, UserSession session) {
 
         Member member = getMember(session.getId());
-        Board board = Board.makeBoardOne(boardRequest.getTitle(), boardRequest.getContent(),
-            member);
+        Board board = Board.createBoard(boardRequest, member);
         boardRepository.save(board);
         return board.getId();
     }

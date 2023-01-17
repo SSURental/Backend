@@ -28,4 +28,7 @@ public class ResponsePageDTO<DTO, EN> {
         hasNext = result.hasNext();
     }
 
+    public List<DTO> getContents() {
+            return contents;
+    }
 }

@@ -1,0 +1,29 @@
+
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: ssu-rental-bucket
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIATLEO2CZ4VTPQB4W7
+      secret-key: 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
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
