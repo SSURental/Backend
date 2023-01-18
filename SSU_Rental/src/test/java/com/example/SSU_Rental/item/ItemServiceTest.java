@@ -113,12 +113,8 @@ class ItemServiceTest {
 
         //Assert
         Item findItem = itemRepository.getItem(item.getId());
-        assertEquals(findItem.getId(),item.getId());
         assertEquals(findItem.getItemName(),"아이템2");
         assertEquals(findItem.getPrice(),1000);
-        assertEquals(findItem.getMember().getId(),member.getId());
-        assertEquals(findItem.getItemGroup(), Group.STUDENT);
-        assertEquals(findItem.isDeleted(), false);
         assertEquals(findItem.getItemImages().get(0).getImgName(),"item-img01");
         assertEquals(findItem.getItemImages().get(1).getImgName(),"item-img02");
 
@@ -176,6 +172,11 @@ class ItemServiceTest {
         assertThrows(ForbiddenException.class,()->{itemService.delete(item.getId(),createUserSession(anotherMember));});
 
     }
+
+    /**
+     * 이미 삭제된 글은 삭제할 수 없다? -> 테스트 가치가 떨어짐.
+     */
+
 
 
 

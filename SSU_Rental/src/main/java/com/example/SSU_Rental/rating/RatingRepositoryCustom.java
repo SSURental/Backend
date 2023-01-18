@@ -12,4 +12,5 @@ public interface RatingRepositoryCustom  {
 
     Page<Rating> getMyRatingList(Member member,RequestPageDTO requestPageDTO);
 
+    Rating getRating(Long ratingId);
 }

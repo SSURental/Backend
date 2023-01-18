@@ -32,7 +32,7 @@ public class RatingService {
 
         Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        Rating rating = Rating.makeRatingOne(loginMember, item, ratingRequest);
+        Rating rating = Rating.createRating(loginMember, item, ratingRequest);
         ratingRepository.save(rating);
         return rating.getId();
     }
@@ -69,13 +69,11 @@ public class RatingService {
 
 
     @Transactional
-    public void remove(Long itemId, Long ratingId, UserSession session) {
+    public void delete(Long itemId, Long ratingId, UserSession session) {
         Item item = getItem(itemId);
         Member loginMember = getMember(session.getId());
         Rating rating = getRating(ratingId);
         rating.delete(loginMember, item);
-        ratingRepository.delete(rating);
-
     }
 
     private Member getMember(Long memberId) {

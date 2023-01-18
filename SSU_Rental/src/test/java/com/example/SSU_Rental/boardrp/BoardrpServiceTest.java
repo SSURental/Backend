@@ -42,9 +42,9 @@ class BoardrpServiceTest {
 
     @BeforeEach
     public void clean(){
+        boardrpRepository.deleteAll();
         boardRepository.deleteAll();
         memberRepository.deleteAll();
-        boardrpRepository.deleteAll();
     }
 
     @Test
@@ -61,7 +61,7 @@ class BoardrpServiceTest {
             createUserSession(member));
 
         //Assert
-        Boardrp findBoardrp = boardrpRepository.findAll().get(0);
+        Boardrp findBoardrp = boardrpRepository.getBoardrp(replyId);
         assertEquals(findBoardrp.getId(),replyId);
         assertEquals(findBoardrp.getContent(),"댓글");
         assertEquals(findBoardrp.getBoard().getId(),board.getId());
@@ -178,6 +178,10 @@ class BoardrpServiceTest {
 
     }
 
+    /**
+     * 이미 삭제된 댓글은 삭제할 수 없다? -> 테스트 가치가 떨어짐.
+     */
+
 
 
     private Member createMember(String loginId, String password,String name,String group, String imageName){
@@ -197,12 +201,10 @@ class BoardrpServiceTest {
     }
 
     private Board getBoard(Long boardId){
-        return boardRepository.findById(boardId)
-            .orElseThrow(()->new RuntimeException("해당 게시글은 존재하지 않습니다."));
+        return boardRepository.getBoard(boardId);
     }
 
     private Boardrp getBoardrp(Long boardrpId){
-        return boardrpRepository.findById(boardrpId)
-            .orElseThrow(()->new RuntimeException("해당 게시글은 존재하지 않습니다."));
+        return boardrpRepository.getBoardrp(boardrpId);
     }
 }

@@ -39,4 +39,14 @@ public class RentalRepositoryImpl implements RentalRepositoryCustom {
 
     }
 
+    //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
+    @Override
+    public Rental getRental(Long rentalId) {
+        return jpaQueryFactory.selectFrom(rental)
+            .leftJoin(rental.member, QMember.member).fetchJoin()
+            .leftJoin(rental.item, item).fetchJoin()
+            .where(rental.id.eq(rentalId).and(rental.isDeleted.eq(false)))
+            .fetchOne();
+
+    }
 }

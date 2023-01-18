@@ -10,6 +10,7 @@ import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.rental.Rental;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,8 +151,8 @@ public class Item extends BaseEntity {
         return Rental.builder()
             .member(loginMember)
             .item(this)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(7))
+            .startDate(LocalDate.now())
+            .endDate(LocalDate.now().plusDays(7))
             .isDeleted(false)
             .build();
 

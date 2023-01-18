@@ -25,16 +25,10 @@ public class MemberImage {
 
     private String imgName;
 
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "memberImage")
-    private Member member;
 
     @Builder
-    public MemberImage(String imgName, Member member) {
+    public MemberImage(String imgName) {
         this.imgName = imgName;
-        this.member = member;
     }
 
-    public void addMember(Member member) {
-        this.member = member;
-    }
 }

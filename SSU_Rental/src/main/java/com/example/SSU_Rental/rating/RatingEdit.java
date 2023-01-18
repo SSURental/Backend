@@ -1,5 +1,6 @@
 package com.example.SSU_Rental.rating;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -11,4 +12,9 @@ public class RatingEdit {
 
     private Integer score;
 
+    @Builder
+    public RatingEdit(String content, Integer score) {
+        this.content = content;
+        this.score = score;
+    }
 }

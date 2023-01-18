@@ -54,7 +54,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public QMember(Class<? extends Member> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.memberImage = inits.isInitialized("memberImage") ? new com.example.SSU_Rental.image.QMemberImage(forProperty("memberImage"), inits.get("memberImage")) : null;
+        this.memberImage = inits.isInitialized("memberImage") ? new com.example.SSU_Rental.image.QMemberImage(forProperty("memberImage")) : null;
     }
 
 }

@@ -81,6 +81,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             total::fetchOne);
     }
 
+    //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
     @Override
     public Item getItem(Long itemId) {
 

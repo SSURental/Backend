@@ -51,7 +51,7 @@ class BoardServiceTest {
         Long boardId = boardService.register(new BoardRequest("제목", "내용"), createUserSession(member));
 
         //Assert
-        Board findBoard = boardRepository.findAll().get(0);
+        Board findBoard = boardRepository.getBoard(boardId);
         assertEquals(boardRepository.count(), 1L);
         assertEquals(findBoard.getId(), boardId);
         assertEquals(findBoard.getTitle(), "제목");
@@ -283,6 +283,10 @@ class BoardServiceTest {
 //        });
 //    }
 
+    /**
+     * 이미 삭제된 글은 삭제할 수 없다? -> 테스트 가치가 떨어짐.
+     */
+
 
     private Member createMember(String loginId, String password, String name, String group,
         String imgName) {
@@ -305,8 +309,7 @@ class BoardServiceTest {
     }
 
     private Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId)
-            .orElseThrow(() -> new RuntimeException("해당 게시글은 존재하지 않습니다."));
+        return boardRepository.getBoard(boardId);
     }
 
 

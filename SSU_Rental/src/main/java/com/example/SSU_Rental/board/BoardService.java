@@ -54,7 +54,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse getOne(Long boardId) {
-        Board board = getBoard(boardId);
+        Board board = boardRepository.getBoard(boardId);
         board.view();
         return BoardResponse.from(board);
     }

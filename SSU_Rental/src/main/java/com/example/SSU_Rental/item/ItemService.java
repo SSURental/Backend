@@ -86,6 +86,7 @@ public class ItemService {
             .orElseThrow(() -> new MemberNotFound());
     }
 
+    // 간단한 조회일때는 findById, 연관관계 다 끌고 와야 할때는 Itemrepository.getItem();
     private Item getItem(Long itemId) {
         Item findItem = itemRepository.findById(itemId)
             .orElseThrow(() -> new ItemNotFound());

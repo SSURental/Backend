@@ -57,7 +57,7 @@ public class Rating {
     }
 
 
-    public static Rating makeRatingOne(Member loginMember,Item item ,RatingRequest ratingRequest) {
+    public static Rating createRating(Member loginMember,Item item ,RatingRequest ratingRequest) {
 
         if(item.getMember().getId()==loginMember.getId()){
             throw new ConflictException();

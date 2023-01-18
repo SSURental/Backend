@@ -84,7 +84,6 @@ public class Member {
 
     private void addMemberImage(MemberImage memberImage) {
         this.memberImage = memberImage;
-        memberImage.addMember(this);
     }
 
     private void validate(Member loginMember) {

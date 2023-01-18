@@ -56,23 +56,19 @@ public class MemberService {
     }
 
     public MemberResponse getOne(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 회원입니다."));
-
+        Member member = memberRepository.getMember(memberId);
         return MemberResponse.from(member);
     }
 
 
     @Transactional
     public void edit(Long memberId, MemberEdit memberEdit, UserSession session) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
+        Member member = getMember(memberId);
 
-        Member loginMember = memberRepository.findById(session.getId())
-            .orElseThrow(() -> new IllegalArgumentException("없는 멤버입니다."));
+        Member loginMember = getMember(session.getId());
 
         MemberEditorBuilder memberEditorBuilder = member.toEditor();
-        MemberImage memberImage = new MemberImage(memberEdit.getImageDTO().getImgName(), member);
+        MemberImage memberImage = new MemberImage(memberEdit.getImageDTO().getImgName());
         MemberEditor memberEditor = memberEditorBuilder.name(memberEdit.getName())
             .memberImage(memberImage)
             .build();
@@ -127,6 +123,7 @@ public class MemberService {
     }
 
 
+    // 간단한 조회일때는 findById, 연관관계 다 끌고 와야 할때는 Itemrepository.getItem();
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new MemberNotFound());

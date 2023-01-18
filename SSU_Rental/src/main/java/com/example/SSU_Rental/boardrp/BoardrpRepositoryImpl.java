@@ -59,4 +59,14 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
     }
+
+    //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
+    @Override
+    public Boardrp getBoardrp(Long boardrpId) {
+        return jpaQueryFactory.selectFrom(boardrp)
+            .leftJoin(boardrp.member, QMember.member).fetchJoin()
+            .leftJoin(boardrp.board, QBoard.board).fetchJoin()
+            .where(boardrp.id.eq(boardrpId).and(boardrp.isDeleted.eq(false)))
+            .fetchOne();
+    }
 }

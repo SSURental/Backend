@@ -66,7 +66,7 @@ public class RatingController {
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
         UserSession session) {
-        ratingService.remove(itemId, ratingId, session);
+        ratingService.delete(itemId, ratingId, session);
         return ResponseEntity.ok().build();
     }
 

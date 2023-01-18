@@ -12,4 +12,6 @@ public interface BoardrpRepositoryCustom {
 
     Page<Boardrp> getMyReplyList(Member member,RequestPageDTO requestPageDTO);
 
+    Boardrp getBoardrp(Long boardrpId);
+
 }

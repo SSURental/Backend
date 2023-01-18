@@ -38,7 +38,7 @@ public class RentalService {
     }
 
     public RentalResponse getOne(Long itemId, Long rentalId) {
-        Rental rental = getRental(rentalId);
+        Rental rental = rentalRepository.getRental(rentalId);
         return RentalResponse.from(rental);
     }
 

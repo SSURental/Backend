@@ -5,6 +5,7 @@ import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,15 +39,15 @@ public class Rental {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     private boolean isDeleted;
 
     @Builder
-    public Rental(Long id, Member member, Item item, LocalDateTime startDate,
-        LocalDateTime endDate,boolean isDeleted) {
+    public Rental(Long id, Member member, Item item, LocalDate startDate,
+        LocalDate endDate,boolean isDeleted) {
         this.id = id;
         this.member = member;
         this.item = item;

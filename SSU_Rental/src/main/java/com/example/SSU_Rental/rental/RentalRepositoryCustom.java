@@ -8,5 +8,6 @@ public interface RentalRepositoryCustom  {
 
     Page<Rental> getList(Member member, RequestPageDTO requestPageDTO);
 
+    Rental getRental(Long rentalId);
 
 }
