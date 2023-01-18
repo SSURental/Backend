@@ -1,5 +1,8 @@
 package com.example.SSU_Rental.rating;
 
+import com.example.SSU_Rental.exception.AlreadyDeletedException;
+import com.example.SSU_Rental.exception.BadRequestException;
+import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
@@ -57,7 +60,7 @@ public class Rating {
     public static Rating makeRatingOne(Member loginMember,Item item ,RatingRequest ratingRequest) {
 
         if(item.getMember().getId()==loginMember.getId()){
-            throw new IllegalArgumentException("자신이 등록한 아이템에 대해 자신이 평가를 내릴 수는 없습니다.");
+            throw new ConflictException();
         }
 
         return Rating.builder()
@@ -76,7 +79,7 @@ public class Rating {
         }
 
         if(this.item.getId()!=item.getId()){
-            throw new IllegalArgumentException("아이템 아이디 혹은 리뷰 아이디가 잘못 되었습니다.");
+            throw new BadRequestException();
         }
 
     }
@@ -95,7 +98,7 @@ public class Rating {
 
     public void delete(Member loginMember,Item item){
         validate(loginMember,item);
-        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 평가입니다.");
+        if(this.isDeleted==true) throw new AlreadyDeletedException();
         this.isDeleted = true;
 
     }

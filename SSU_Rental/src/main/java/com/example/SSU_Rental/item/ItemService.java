@@ -2,6 +2,7 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.notfound.ItemNotFound;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.image.ItemImage;
@@ -35,6 +36,12 @@ public class ItemService {
         return item.getId();
     }
 
+
+    public ItemResponse getOne(Long itemId) {
+        Item item = itemRepository.getItem(itemId);
+        return ItemResponse.from(item, item.getItemImages());
+    }
+
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
         Page<Object[]> pageResult = itemRepository.getList(requestPageDTO);
@@ -44,10 +51,6 @@ public class ItemService {
     }
 
 
-    public ItemResponse getOne(Long itemId) {
-        List<Object[]> result = itemRepository.getItem(itemId);
-        return ItemResponse.from((Item) result.get(0)[0], (List<ItemImage>) result.get(0)[1]);
-    }
 
     @Transactional
     public void edit(Long itemId, ItemEdit editRequest, UserSession session) {
@@ -74,7 +77,6 @@ public class ItemService {
         Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
         item.delete(loginMember);
-        itemRepository.delete(item);
     }
 
 
@@ -87,7 +89,7 @@ public class ItemService {
     private Item getItem(Long itemId) {
         Item findItem = itemRepository.findById(itemId)
             .orElseThrow(() -> new ItemNotFound());
-        if(findItem.isDeleted()) throw new IllegalArgumentException("이미 삭제된 아이템입니다.");
+        if(findItem.isDeleted()) throw new AlreadyDeletedException();
         return findItem;
     }
 

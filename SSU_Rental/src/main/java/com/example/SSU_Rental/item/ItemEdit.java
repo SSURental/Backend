@@ -3,8 +3,6 @@ package com.example.SSU_Rental.item;
 import com.example.SSU_Rental.image.ImageDTO;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,16 +11,15 @@ public class ItemEdit {
 
     private String itemName;
 
-    private int price;
+    private Integer price;
 
+    @Builder.Default
     private List<ImageDTO> imageDTOList = new ArrayList<>();
 
 
     @Builder
-    public ItemEdit(String itemName, int price,
-        List<ImageDTO> imageDTOList) {
+    public ItemEdit(String itemName, Integer price) {
         this.itemName = itemName;
         this.price = price;
-        this.imageDTOList = imageDTOList;
     }
 }

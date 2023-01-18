@@ -4,6 +4,8 @@ package com.example.SSU_Rental.boardrp;
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.BaseEntity;
+import com.example.SSU_Rental.exception.AlreadyDeletedException;
+import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.member.Member;
 import javax.persistence.Column;
@@ -68,7 +70,7 @@ public class Boardrp extends BaseEntity {
         }
 
         if(this.board.getId()!=board.getId()){
-            throw new IllegalArgumentException("댓글 아이디 혹은 게시글 아이디가 잘못되었습니다.");
+            throw new BadRequestException();
         }
     }
 
@@ -85,7 +87,7 @@ public class Boardrp extends BaseEntity {
 
     public void delete(Member loginMember,Board board){
         validate(loginMember,board);
-        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 글입니다.");
+        if(this.isDeleted==true) throw new AlreadyDeletedException();
         this.isDeleted = true;
     }
 }

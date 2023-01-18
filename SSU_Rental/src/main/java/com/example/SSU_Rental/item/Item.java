@@ -2,10 +2,15 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.common.Group;
+import com.example.SSU_Rental.exception.AlreadyDeletedException;
+import com.example.SSU_Rental.exception.BadRequestException;
+import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.rental.Rental;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -124,29 +129,38 @@ public class Item extends BaseEntity {
 
     public void delete(Member loginMember){
         validate(loginMember);
-        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 아이템입니다.");
+        if(this.isDeleted==true) throw new AlreadyDeletedException();
         this.isDeleted = true;
     }
 
 
-    public void rental(Member member) {
+    public Rental rental(Member loginMember) {
 
-        if(this.member.getId()==member.getId()){
-            throw new IllegalArgumentException("자신의 물품은 빌릴 수는 없습니다.");
+        if(this.member.getId()==loginMember.getId()){
+            throw new ConflictException();
         }
 
         if(status!=ItemStatus.AVAILABLE){
-            throw new IllegalArgumentException("이미 렌탈중인 아이템");
+            throw new BadRequestException();
         }else {
             this.status = ItemStatus.LOAN;
         }
+
+
+        return Rental.builder()
+            .member(loginMember)
+            .item(this)
+            .startDate(LocalDateTime.now())
+            .endDate(LocalDateTime.now().plusDays(7))
+            .isDeleted(false)
+            .build();
 
     }
 
     public void returnItem() {
 
         if(this.status!=ItemStatus.LOAN){
-            throw new IllegalArgumentException("에러 입니다.");
+            throw new BadRequestException();
         }else {
             this.status = ItemStatus.AVAILABLE;
         }

@@ -1,5 +1,7 @@
 package com.example.SSU_Rental.rental;
 
+import com.example.SSU_Rental.exception.AlreadyDeletedException;
+import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
@@ -53,15 +55,22 @@ public class Rental {
         this.isDeleted = isDeleted;
     }
 
-    public static Rental createRental(Item item, Member member) {
-        return Rental.builder()
-            .member(member)
-            .item(item)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(7))
-            .isDeleted(false)
-            .build();
-    }
+//    public static Rental createRental(Item item, Member loginMember) {
+//
+//        if(item.getMember().getId()==loginMember.getId()){
+//            throw new ConflictException();
+//        }
+//
+//        item.rental(loginMember);
+//
+//        return Rental.builder()
+//            .member(loginMember)
+//            .item(item)
+//            .startDate(LocalDateTime.now())
+//            .endDate(LocalDateTime.now().plusDays(7))
+//            .isDeleted(false)
+//            .build();
+//    }
 
     private void validate(Member member,Item item) {
         if(this.member.getId() != member.getId()){
@@ -69,7 +78,7 @@ public class Rental {
         }
 
         if(this.item.getId()!=item.getId()){
-            throw new IllegalArgumentException("아이템 아이디 혹은 렌탈 아이디가 잘못 되었습니다.");
+            throw new BadRequestException();
         }
 
     }
@@ -82,7 +91,7 @@ public class Rental {
 
     public void delete(Member loginMember, Item item){
         validate(loginMember,item);
-        if(this.isDeleted==true) throw new IllegalArgumentException("이미 삭제된 글입니다.");
+        if(this.isDeleted==true) throw new AlreadyDeletedException();
         this.isDeleted = true;
     }
 }

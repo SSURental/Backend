@@ -6,11 +6,11 @@ import static com.example.SSU_Rental.member.QMember.member;
 
 import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.common.RequestPageDTO;
+import com.example.SSU_Rental.image.QItemImage;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -82,21 +82,22 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public List<Object[]> getItem(Long itemId) {
+    public Item getItem(Long itemId) {
 
         Item item = jpaQueryFactory.select(QItem.item)
             .from(QItem.item)
             .leftJoin(QItem.item.member, member).fetchJoin()
+            .leftJoin(QItem.item.itemImages, QItemImage.itemImage).fetchJoin()
             .distinct()
             .where(QItem.item.id.eq(itemId).and(QItem.item.isDeleted.eq(false)))
             .fetchOne();
 
-        Object[] objects = new Object[2];
-        objects[0] = item;
-        objects[1] = item.getItemImages();
-        List<Object[]> content = new ArrayList<>();
-        content.add(objects);
+//        Object[] objects = new Object[2];
+//        objects[0] = item;
+//        objects[1] = item.getItemImages();
+//        List<Object[]> content = new ArrayList<>();
+//        content.add(objects);
 
-        return content;
+        return item;
     }
 }

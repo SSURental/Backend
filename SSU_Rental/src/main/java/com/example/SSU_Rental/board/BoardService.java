@@ -3,6 +3,7 @@ package com.example.SSU_Rental.board;
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.notfound.BoardNotFound;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.login.UserSession;
@@ -97,7 +98,7 @@ public class BoardService {
     private Board getBoard(Long boardId) {
         Board findBoard = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFound());
-        if(findBoard.isDeleted()==true) throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
+        if(findBoard.isDeleted()==true) throw new AlreadyDeletedException();
         return findBoard;
     }
 

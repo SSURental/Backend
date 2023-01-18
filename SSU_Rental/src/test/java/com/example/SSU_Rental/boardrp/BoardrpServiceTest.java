@@ -8,6 +8,7 @@ import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.board.BoardRequest;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
@@ -16,7 +17,7 @@ import com.example.SSU_Rental.member.MemberRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ class BoardrpServiceTest {
     private BoardrpService boardrpService;
 
 
-    @AfterEach
+    @BeforeEach
     public void clean(){
         boardRepository.deleteAll();
         memberRepository.deleteAll();
@@ -49,19 +50,22 @@ class BoardrpServiceTest {
     @Test
     @DisplayName("댓글 등록")
     public void test1(){
-        Member member = createMember("user1", "password1", "유저1", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
         memberRepository.save(member);
         Board board = createBoard("제목", "내용", member);
         boardRepository.save(board);
 
+        //Act
         Long replyId = boardrpService.register(board.getId(), new BoardrpRequest("댓글"),
             createUserSession(member));
 
-        assertEquals(boardrpRepository.findAll().get(0).getId(),replyId);
-        assertEquals(boardrpRepository.findAll().get(0).getContent(),"댓글");
-        assertEquals(boardrpRepository.findAll().get(0).getBoard().getId(),board.getId());
-        assertEquals(boardrpRepository.findAll().get(0).getMember().getId(),member.getId());
+        //Assert
+        Boardrp findBoardrp = boardrpRepository.findAll().get(0);
+        assertEquals(findBoardrp.getId(),replyId);
+        assertEquals(findBoardrp.getContent(),"댓글");
+        assertEquals(findBoardrp.getBoard().getId(),board.getId());
+        assertEquals(findBoardrp.getMember().getId(),member.getId());
 
     }
 
@@ -69,8 +73,8 @@ class BoardrpServiceTest {
     @Test
     @DisplayName("댓글 페이지 조회")
     public void test2(){
-        Member member = createMember("user1", "password1", "유저1", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
         memberRepository.save(member);
         Board board = createBoard("제목", "내용", member);
         boardRepository.save(board);
@@ -79,9 +83,11 @@ class BoardrpServiceTest {
                 Collectors.toList());
         boardrpRepository.saveAll(boardrpList);
 
+        //Act
         ResponsePageDTO response = boardrpService.getList(board.getId(),
             RequestPageDTO.builder().page(1).size(5).build());
 
+        //Assert
         BoardrpResponse boardrpResponse = (BoardrpResponse) (response.getContents().get(0));
         assertEquals(response.getPage(),1);
         assertEquals(response.getSize(),5);
@@ -93,33 +99,20 @@ class BoardrpServiceTest {
     }
 
     @Test
-    @DisplayName("없는 댓글 수정하기 -> 예외 발생")
-    public void test3(){
-        Member member = createMember("user1", "password1", "유저1", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
-        memberRepository.save(member);
-        Board board = createBoard("제목", "내용", member);
-        boardRepository.save(board);
-        Boardrp boardrp = createBoardrp(board, member, "내용");
-        boardrpRepository.save(boardrp);
-
-        assertThrows(CustomException.class,()-> {boardrpService.edit(board.getId(), boardrp.getId()+2L, new BoardrpEdit("내용-수정"),createUserSession(member));});
-
-    }
-
-    @Test
     @DisplayName("댓글 수정하기")
-    public void test4(){
-        Member member = createMember("user1", "password1", "유저1", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
+    public void test3(){
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
         memberRepository.save(member);
         Board board = createBoard("제목", "내용", member);
         boardRepository.save(board);
         Boardrp boardrp = createBoardrp(board, member, "내용");
         boardrpRepository.save(boardrp);
 
+        //Act
         boardrpService.edit(board.getId(), boardrp.getId(), new BoardrpEdit("내용-수정"),createUserSession(member));
 
+        //Assert
         Boardrp findBoardrp = getBoardrp(boardrp.getId());
         assertEquals(findBoardrp.getContent(),"내용-수정");
 
@@ -128,11 +121,10 @@ class BoardrpServiceTest {
     @Test
     @DisplayName("댓글 수정은 오직 댓글 작성자만 가능하다.")
     public void test5(){
-        Member member = createMember("user1", "password1", "유저1", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
         memberRepository.save(member);
-        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "img-02");
         memberRepository.save(anotherMember);
         Board board = createBoard("제목", "내용", member);
         boardRepository.save(board);
@@ -140,31 +132,56 @@ class BoardrpServiceTest {
         boardrpRepository.save(boardrp);
 
 
-
-        assertThrows(CustomException.class,()->boardrpService.edit(board.getId(), boardrp.getId(), new BoardrpEdit("내용-수정"),createUserSession(anotherMember)));
+        //Act
+        assertThrows(
+            ForbiddenException.class,()->boardrpService.edit(board.getId(), boardrp.getId(), new BoardrpEdit("내용-수정"),createUserSession(anotherMember)));
 
     }
 
     @Test
     @DisplayName("댓글 삭제하기")
     public void test6(){
-        Member member = createMember("user1", "password1", "유저1", "STUDENT",
-            new ImageDTO("dsdadsd-sfasfsaf"));
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
         memberRepository.save(member);
         Board board = createBoard("제목", "내용", member);
         boardRepository.save(board);
         Boardrp boardrp = createBoardrp(board, member, "내용");
         boardrpRepository.save(boardrp);
 
+        //Act
         boardrpService.delete(board.getId(), boardrp.getId(),createUserSession(member));
-        // todo
+
+        // Assert
+        Boardrp findBoardrp = getBoardrp(boardrp.getId());
+        assertEquals(findBoardrp.isDeleted(),true);
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 오직 댓글 작성자만 가능하다.")
+    public void test7(){
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "img-02");
+        memberRepository.save(anotherMember);
+        Board board = createBoard("제목", "내용", member);
+        boardRepository.save(board);
+        Boardrp boardrp = createBoardrp(board, member, "내용");
+        boardrpRepository.save(boardrp);
+
+
+        //Act
+        assertThrows(
+            ForbiddenException.class,()->boardrpService.delete(board.getId(), boardrp.getId(),createUserSession(anotherMember)));
 
     }
 
 
 
-    private Member createMember(String loginId, String password,String name,String group, ImageDTO imageDTO){
-        return Member.createMember(new MemberRequest(loginId,password,name,group,imageDTO));
+    private Member createMember(String loginId, String password,String name,String group, String imageName){
+        return Member.createMember(new MemberRequest(loginId,password,name,group,new ImageDTO(imageName)));
     }
 
     private Board createBoard(String title,String content,Member member){
