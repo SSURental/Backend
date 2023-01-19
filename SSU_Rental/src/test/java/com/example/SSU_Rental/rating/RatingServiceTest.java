@@ -1,9 +1,11 @@
 package com.example.SSU_Rental.rating;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ImageDTO;
@@ -17,7 +19,6 @@ import com.example.SSU_Rental.member.MemberRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,7 @@ class RatingServiceTest {
     @Test
     @DisplayName("리뷰 등록")
     public void test1(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
@@ -72,6 +74,7 @@ class RatingServiceTest {
     @Test
     @DisplayName("본인의 아이템에 본인이 리뷰를 등록할 수 없습니다.")
     public void test2(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Item item = createItem("아이템", 10000, "item-img01", "item-img02", member);
@@ -85,6 +88,7 @@ class RatingServiceTest {
     @Test
     @DisplayName("특정 아이템의 리뷰 평점 확인")
     public void test3(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
@@ -108,6 +112,7 @@ class RatingServiceTest {
     @Test
     @DisplayName("특정 아이템의 리뷰 목록 확인")
     public void test4(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
@@ -139,6 +144,7 @@ class RatingServiceTest {
     @Test
     @DisplayName("리뷰 수정")
     public void test5(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
@@ -161,6 +167,7 @@ class RatingServiceTest {
     @Test
     @DisplayName("리뷰 수정은 리뷰 작성자만 할 수 있습니다.")
     public void test6(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
@@ -179,8 +186,30 @@ class RatingServiceTest {
     }
 
     @Test
+    @DisplayName("리뷰 수정시 리뷰가 정확히 어떤 아이템의 리뷰인지 URL 경로에 정확하게 표시해야 합니다.(만약 리뷰와 연관된 아이템 != URL 경로상 아이템  -> 수정 실패)")
+    public void test6_1(){ // 도메인 유의성이 있어 테스트
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
+        memberRepository.save(anotherMember);
+        Item item = createItem("아이템", 10000, "item-img01", "item-img02", member);
+        itemRepository.save(item);
+        Item anotherItem = createItem("아이템2", 20000, "item-img03", "item-img04", member);
+        itemRepository.save(anotherItem);
+        Rating rating = createRating(anotherMember, item, 10, "내용");
+        ratingRepository.save(rating);
+
+        //Act
+        assertThrows(BadRequestException.class,()->{ratingService.edit(anotherItem.getId(),rating.getId(),RatingEdit.builder().content("좋아요").build(),
+            createUserSession(anotherMember));});
+
+    }
+
+    @Test
     @DisplayName("리뷰 삭제")
     public void test7(){
+        //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
         memberRepository.save(member);
         Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
@@ -197,6 +226,50 @@ class RatingServiceTest {
         Rating findRating = ratingRepository.findById(rating.getId()).get();
         assertEquals(findRating.isDeleted(),true);
     }
+
+    @Test
+    @DisplayName("리뷰 삭제는 리뷰 작성자만 할 수 있습니다.")
+    public void test8(){
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
+        memberRepository.save(anotherMember);
+        Member thirdMember = createMember("user3", "password3", "유저3", "STUDENT", "member-img03");
+        memberRepository.save(thirdMember);
+        Item item = createItem("아이템", 10000, "item-img01", "item-img02", member);
+        itemRepository.save(item);
+        Rating rating = createRating(anotherMember, item, 10, "내용");
+        ratingRepository.save(rating);
+
+        //Act
+        assertThrows(ForbiddenException.class,()->{ratingService.delete(item.getId(),rating.getId(), createUserSession(thirdMember));});
+
+    }
+
+    @Test
+    @DisplayName("리뷰 삭제시 리뷰가 정확히 어떤 아이템의 리뷰인지 URL 경로에 정확하게 표시해야 합니다.(만약 리뷰와 연관된 아이템 != URL 경로상 아이템  -> 삭제 실패)")
+    public void test8_1(){ // 도메인 유의성이 있어 테스트
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "member-img02");
+        memberRepository.save(anotherMember);
+        Item item = createItem("아이템", 10000, "item-img01", "item-img02", member);
+        itemRepository.save(item);
+        Item anotherItem = createItem("아이템2", 20000, "item-img03", "item-img04", member);
+        itemRepository.save(anotherItem);
+        Rating rating = createRating(anotherMember, item, 10, "내용");
+        ratingRepository.save(rating);
+
+        //Act
+        assertThrows(BadRequestException.class,()->{ratingService.delete(anotherItem.getId(),rating.getId(), createUserSession(anotherMember));});
+
+    }
+    /**
+     * 이미 삭제된 리뷰를 삭제 Or 수정? -> 예외발생-> 테스트 가치가 떨어짐.
+     * 애시당초 없는 리뷰를 삭제 Or 수정 -> 예외발생 -> 테스트 가치가 떨어짐.
+     */
 
 
     private Member createMember(String loginId, String password,String name,String group, String imageName){

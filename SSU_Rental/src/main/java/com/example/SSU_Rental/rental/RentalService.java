@@ -28,13 +28,11 @@ public class RentalService {
 
     @Transactional
     public Long rental(Long itemId, UserSession session) {
-
         Item item = getItem(itemId);
         Member loginMember = getMember(session.getId());
         Rental rental = item.rental(loginMember);
         rentalRepository.save(rental);
         return rental.getId();
-
     }
 
     public RentalResponse getOne(Long itemId, Long rentalId) {
@@ -66,8 +64,7 @@ public class RentalService {
         Rental rental = getRental(rentalId);
         Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        rental.delete(loginMember,item);
-        item.returnItem();
+        item.returnItem(rental,loginMember);
     }
 
     private Item getItem(Long itemId) {

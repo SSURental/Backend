@@ -69,7 +69,6 @@ public class BoardrpService {
 
 
     public Member getMember(Long memberId) {
-
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new MemberNotFound());
     }
@@ -77,7 +76,7 @@ public class BoardrpService {
     public Board getBoard(Long boardId) {
         Board findBoard = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFound());
-        if(findBoard.isDeleted()==true) throw new AlreadyDeletedException();
+        if(findBoard.isDeleted()) throw new AlreadyDeletedException();
         return findBoard;
 
     }

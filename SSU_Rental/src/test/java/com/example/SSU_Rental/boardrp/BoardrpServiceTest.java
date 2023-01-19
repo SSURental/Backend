@@ -8,6 +8,7 @@ import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.board.BoardRequest;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
@@ -139,6 +140,29 @@ class BoardrpServiceTest {
     }
 
     @Test
+    @DisplayName("댓글 수정시 댓글이 정확히 어떤 게시글의 댓글인지 URL 경로에 정확하게 표시해야 합니다.(만약 댓글과 연관된 게시글 != URL 경로상 게시글  -> 수정 실패)")
+    public void test5_1(){ // 그래도 도메인 유의성이 있어 테스트함
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "img-02");
+        memberRepository.save(anotherMember);
+        Board board = createBoard("제목", "내용", member);
+        boardRepository.save(board);
+        Board anotherboard = createBoard("제목2", "내용2", member);
+        boardRepository.save(anotherboard);
+        Boardrp boardrp = createBoardrp(board, member, "내용");
+        boardrpRepository.save(boardrp);
+
+
+        //Act
+        assertThrows(
+            BadRequestException.class,()->boardrpService.edit(anotherboard.getId(), boardrp.getId(), new BoardrpEdit("내용-수정"),createUserSession(member)));
+
+    }
+
+
+    @Test
     @DisplayName("댓글 삭제하기")
     public void test6(){
         //Arrange
@@ -153,7 +177,7 @@ class BoardrpServiceTest {
         boardrpService.delete(board.getId(), boardrp.getId(),createUserSession(member));
 
         // Assert
-        Boardrp findBoardrp = getBoardrp(boardrp.getId());
+        Boardrp findBoardrp = boardrpRepository.findById(boardrp.getId()).get();
         assertEquals(findBoardrp.isDeleted(),true);
 
     }
@@ -178,8 +202,32 @@ class BoardrpServiceTest {
 
     }
 
+
+    @Test
+    @DisplayName("댓글 삭제시 댓글이 정확히 어떤 게시글의 댓글인지 URL 경로에 정확하게 표시해야 합니다.(만약 댓글과 연관된 게시글 != URL 경로상 게시글  -> 삭제 실패)")
+    public void test7_1(){ // 그래도 도메인 유의성이 있어 테스트함
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img-01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "img-02");
+        memberRepository.save(anotherMember);
+        Board board = createBoard("제목", "내용", member);
+        boardRepository.save(board);
+        Board anotherboard = createBoard("제목2", "내용2", member);
+        boardRepository.save(anotherboard);
+        Boardrp boardrp = createBoardrp(board, member, "내용");
+        boardrpRepository.save(boardrp);
+
+
+        //Act
+        assertThrows(
+            BadRequestException.class,()->boardrpService.delete(anotherboard.getId(), boardrp.getId(),createUserSession(member)));
+
+    }
+
     /**
-     * 이미 삭제된 댓글은 삭제할 수 없다? -> 테스트 가치가 떨어짐.
+     * 이미 삭제된 댓글은 삭제 Or 수정 -> 예외 발생-> 테스트 가치가 떨어짐.
+     * 애시당초 없는 댓글을 삭제 Or 수정 -> 예외발생->테스트 가치가 떨어짐
      */
 
 

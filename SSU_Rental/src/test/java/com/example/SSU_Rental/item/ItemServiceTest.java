@@ -4,12 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.SSU_Rental.common.Group;
+import com.example.SSU_Rental.common.RequestPageDTO;
+import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import com.example.SSU_Rental.member.MemberRequest;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,8 +105,37 @@ class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("아이템 수정.")
+    @DisplayName("아이템 목록 조회")
     public void test4(){
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-image-01");
+        memberRepository.save(member);
+        List<Item> items = IntStream.rangeClosed(1, 20)
+            .mapToObj(i -> createItem("아이템" + i, i * 1000, "img" + i, "image" + i, member)).collect(
+                Collectors.toList());
+        itemRepository.saveAll(items);
+
+        //Act
+        ResponsePageDTO response = itemService.getItemList(
+            RequestPageDTO.builder().page(1).size(5).group("STUDENT").build());
+
+        assertEquals(response.getPage(),1);
+        assertEquals(response.getSize(),5);
+        assertEquals(response.getTotalPage(),4);
+        assertEquals(response.isHasNext(),true);
+        ItemResponse itemResponse = (ItemResponse) response.getContents().get(0);
+        assertEquals(itemResponse.getItemName(),"아이템20");
+        assertEquals(itemResponse.getPrice(),20000);
+        assertEquals(itemResponse.getMemberName(),"유저1");
+        assertEquals(itemResponse.getGroup(),Group.STUDENT);
+        assertEquals(itemResponse.getStatus(),ItemStatus.AVAILABLE);
+        assertEquals(itemResponse.getImageDTOList().get(0).getImgName(),"img20");
+        assertEquals(itemResponse.getImageDTOList().get(1).getImgName(),"image20");
+    }
+
+    @Test
+    @DisplayName("아이템 수정.")
+    public void test5(){
         //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-image-01");
         memberRepository.save(member);
@@ -124,7 +158,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("권한 없이 아이템 수정을 할 수 없습니다.")
-    public void test5(){
+    public void test6(){
         //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-image-01");
         memberRepository.save(member);
@@ -141,7 +175,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("아이템 삭제")
-    public void test6(){
+    public void test7(){
         //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-image-01");
         memberRepository.save(member);
@@ -159,7 +193,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("권한없이 아이템을 삭제할 수 없습니다.")
-    public void test7(){
+    public void test8(){
         //Arrange
         Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-image-01");
         memberRepository.save(member);
@@ -174,11 +208,9 @@ class ItemServiceTest {
     }
 
     /**
-     * 이미 삭제된 글은 삭제할 수 없다? -> 테스트 가치가 떨어짐.
+     * 이미 삭제된 아이템을 삭제 Or 수정 -> 예외발생-> 테스트 가치가 떨어짐.
+     * 애시당초 없는 아이템을 삭제 Or 수정 -> 예외발생-> 테스트 가치가 떨어짐.
      */
-
-
-
 
 
     private Member createMember(String loginId, String password,String name,String group, String imageName){

@@ -2,7 +2,6 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.common.Group;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
@@ -11,7 +10,6 @@ import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.rental.Rental;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,7 +67,7 @@ public class Item extends BaseEntity {
 
     @Builder
     public Item(Long id, String itemName, Group group,
-        ItemStatus status, int price, Member member,List<ItemImage> itemImages,boolean isDeleted) {
+        ItemStatus status, int price, Member member,boolean isDeleted) {
         this.id = id;
         this.itemName = itemName;
         this.itemGroup = group;
@@ -130,7 +128,7 @@ public class Item extends BaseEntity {
 
     public void delete(Member loginMember){
         validate(loginMember);
-        if(this.isDeleted==true) throw new AlreadyDeletedException();
+//        if(this.isDeleted==true) throw new AlreadyDeletedException(); 이미 리포지터리에서 조회할 떄 삭제 여부를 검사한다.
         this.isDeleted = true;
     }
 
@@ -158,11 +156,12 @@ public class Item extends BaseEntity {
 
     }
 
-    public void returnItem() {
+    public void returnItem(Rental rental,Member loginMember) {
 
         if(this.status!=ItemStatus.LOAN){
             throw new BadRequestException();
         }else {
+            rental.delete(loginMember,this);
             this.status = ItemStatus.AVAILABLE;
         }
     }

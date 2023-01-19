@@ -41,7 +41,7 @@ public class RatingService {
         Item item = getItem(itemId);
 
         return ratingRepository.findByItemForAvg(item)
-            .orElseThrow(() -> new IllegalArgumentException("점수가 없습니다."));
+            .orElseThrow(() -> new RatingNotFound());
     }
 
     public ResponsePageDTO getList(Long itemId, RequestPageDTO requestPageDTO) {

@@ -32,7 +32,7 @@ public class RentalRepositoryImpl implements RentalRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(rental.count())
             .from(rental)
-            .where(rental.member.eq(member));
+            .where(rental.member.eq(member).and(rental.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);

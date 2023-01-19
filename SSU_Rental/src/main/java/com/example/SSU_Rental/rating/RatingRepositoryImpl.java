@@ -34,7 +34,7 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(rating.count())
             .from(rating)
-            .where(rating.item.eq(item));
+            .where(rating.item.eq(item).and(rating.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
@@ -54,7 +54,7 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(rating.count())
             .from(rating)
-            .where(rating.member.eq(member));
+            .where(rating.member.eq(member).and(rating.isDeleted.eq(false)));
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
     }

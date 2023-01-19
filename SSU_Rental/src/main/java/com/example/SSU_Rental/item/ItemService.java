@@ -10,7 +10,6 @@ import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,23 +38,21 @@ public class ItemService {
 
     public ItemResponse getOne(Long itemId) {
         Item item = itemRepository.getItem(itemId);
-        return ItemResponse.from(item, item.getItemImages());
+        return ItemResponse.from(item);
     }
 
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
-        Page<Object[]> pageResult = itemRepository.getList(requestPageDTO);
-        Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
-            Arrays.asList((ItemImage) obj[1])));
+        Page<Item> pageResult = itemRepository.getList(requestPageDTO);
+        Function<Item, ItemResponse> fn =(item -> ItemResponse.from(item));
         return new ResponsePageDTO(pageResult, fn);
     }
-
 
 
     @Transactional
     public void edit(Long itemId, ItemEdit editRequest, UserSession session) {
         Member loginMember = getMember(session.getId());
-        Item item = getItem(itemId);
+        Item item = itemRepository.getItem(itemId);
         ItemEditorBuilder itemEditorBuilder = item.toEditor();
 
         List<ItemImage> itemImages = editRequest.getImageDTOList().stream().map(imageDTO -> {
@@ -81,7 +78,6 @@ public class ItemService {
 
 
     private Member getMember(Long memberId) {
-
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new MemberNotFound());
     }

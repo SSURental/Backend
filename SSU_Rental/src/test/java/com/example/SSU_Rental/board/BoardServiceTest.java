@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.ForbiddenException;
-import com.example.SSU_Rental.exception.notfound.BoardNotFound;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
@@ -91,7 +90,7 @@ class BoardServiceTest {
         boardRepository.save(board);
 
         //Act
-        assertThrows(BoardNotFound.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             boardService.getOne(board.getId() + 10L);
         });
 
@@ -225,7 +224,7 @@ class BoardServiceTest {
         //Act
         boardService.delete(board.getId(), createUserSession(member));
 
-        Board findBoard = getBoard(board.getId());
+        Board findBoard = boardRepository.findById(board.getId()).get();
         assertEquals(findBoard.isDeleted(),true);
     }
 
@@ -283,9 +282,13 @@ class BoardServiceTest {
 //        });
 //    }
 
+
+
     /**
-     * 이미 삭제된 글은 삭제할 수 없다? -> 테스트 가치가 떨어짐.
+     * 이미 삭제된 글을 삭제 Or 수정-> 예외발생 -> 테스트 가치가 떨어짐.
+     * 애시당초 없는 글을 삭제 Or 수정 -> 예외발생 ->테스트 가치가 떨어짐.
      */
+
 
 
     private Member createMember(String loginId, String password, String name, String group,

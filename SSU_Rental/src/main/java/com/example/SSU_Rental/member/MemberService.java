@@ -8,8 +8,8 @@ import com.example.SSU_Rental.boardrp.BoardrpRepository;
 import com.example.SSU_Rental.boardrp.BoardrpResponse;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
+import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
-import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.image.MemberImage;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
@@ -22,7 +22,6 @@ import com.example.SSU_Rental.rating.RatingResponse;
 import com.example.SSU_Rental.rental.Rental;
 import com.example.SSU_Rental.rental.RentalRepository;
 import com.example.SSU_Rental.rental.RentalResponse;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,7 @@ public class MemberService {
 
         Optional<Member> result = memberRepository.findByLoginId(memberRequest.getLoginId());
         if (result.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            throw new BadRequestException();
         }
         Member member = Member.createMember(memberRequest);
 
@@ -63,8 +62,7 @@ public class MemberService {
 
     @Transactional
     public void edit(Long memberId, MemberEdit memberEdit, UserSession session) {
-        Member member = getMember(memberId);
-
+        Member member = memberRepository.getMember(memberId);
         Member loginMember = getMember(session.getId());
 
         MemberEditorBuilder memberEditorBuilder = member.toEditor();
@@ -79,9 +77,8 @@ public class MemberService {
     public ResponsePageDTO getMyItemList(RequestPageDTO requestPageDTO, UserSession session) {
 
         Member member = getMember(session.getId());
-        Page<Object[]> resultPage = itemRepository.getMyItemList(member, requestPageDTO);
-        Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
-            Arrays.asList((ItemImage) obj[1])));
+        Page<Item> resultPage = itemRepository.getMyItemList(member, requestPageDTO);
+        Function<Item, ItemResponse> fn =(item -> ItemResponse.from(item));
         return new ResponsePageDTO(resultPage, fn);
 
 

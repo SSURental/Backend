@@ -3,7 +3,6 @@ package com.example.SSU_Rental.board;
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.boardrp.Boardrp;
 import com.example.SSU_Rental.common.BaseEntity;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.member.Member;
 import java.util.ArrayList;
@@ -131,10 +130,8 @@ public class Board extends BaseEntity {
 
     public void delete(Member loginMember){
         validate(loginMember);
-        if(this.isDeleted==true) throw new AlreadyDeletedException();
         this.isDeleted = true;
     }
-
 
 
 

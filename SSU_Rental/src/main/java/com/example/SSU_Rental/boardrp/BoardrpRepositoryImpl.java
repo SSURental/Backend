@@ -34,7 +34,7 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(boardrp.count())
             .from(boardrp)
-            .where(boardrp.board.eq(board));
+            .where(boardrp.board.eq(board).and(boardrp.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
@@ -54,7 +54,7 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(boardrp.count())
             .from(boardrp)
-            .where(boardrp.member.eq(member));
+            .where(boardrp.member.eq(member).and(boardrp.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);

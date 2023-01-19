@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 
 public interface ItemRepositoryCustom {
 
-    Page<Object[]> getList(RequestPageDTO requestPageDTO);
+    Page<Item> getList(RequestPageDTO requestPageDTO);
 
-    Page<Object[]> getMyItemList(Member member,RequestPageDTO requestPageDTO);
+    Page<Item> getMyItemList(Member member,RequestPageDTO requestPageDTO);
 
     Item getItem(Long itemId);
 

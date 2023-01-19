@@ -54,7 +54,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse getOne(Long boardId) {
-        Board board = boardRepository.getBoard(boardId);
+        Board board = boardRepository.getBoard(boardId); // 모든 연관관계가 필요할 떄 사용
         board.view();
         return BoardResponse.from(board);
     }
@@ -95,10 +95,11 @@ public class BoardService {
             .orElseThrow(() -> new MemberNotFound());
     }
 
+    //모든 연관관계가 필요 없을때 사용
     private Board getBoard(Long boardId) {
         Board findBoard = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFound());
-        if(findBoard.isDeleted()==true) throw new AlreadyDeletedException();
+        if(findBoard.isDeleted()) throw new AlreadyDeletedException();
         return findBoard;
     }
 

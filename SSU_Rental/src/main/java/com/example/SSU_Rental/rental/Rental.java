@@ -1,12 +1,10 @@
 package com.example.SSU_Rental.rental;
 
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -92,7 +90,7 @@ public class Rental {
 
     public void delete(Member loginMember, Item item){
         validate(loginMember,item);
-        if(this.isDeleted==true) throw new AlreadyDeletedException();
+//        if(this.isDeleted==true) throw new AlreadyDeletedException(); 이미 리포지터리에서 조회할 떄 삭제 여부를 검사한다.
         this.isDeleted = true;
     }
 }

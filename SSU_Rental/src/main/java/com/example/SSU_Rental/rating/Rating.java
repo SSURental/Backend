@@ -1,6 +1,5 @@
 package com.example.SSU_Rental.rating;
 
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
@@ -98,7 +97,7 @@ public class Rating {
 
     public void delete(Member loginMember,Item item){
         validate(loginMember,item);
-        if(this.isDeleted==true) throw new AlreadyDeletedException();
+//        if(this.isDeleted==true) throw new AlreadyDeletedException(); -> 이미 리포지터리에서 조회할 떄 삭제 여부를 검사한다.
         this.isDeleted = true;
 
     }

@@ -4,7 +4,6 @@ package com.example.SSU_Rental.boardrp;
 import com.example.SSU_Rental.board.Board;
 import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.BaseEntity;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.member.Member;
@@ -87,7 +86,6 @@ public class Boardrp extends BaseEntity {
 
     public void delete(Member loginMember,Board board){
         validate(loginMember,board);
-        if(this.isDeleted==true) throw new AlreadyDeletedException();
         this.isDeleted = true;
     }
 }

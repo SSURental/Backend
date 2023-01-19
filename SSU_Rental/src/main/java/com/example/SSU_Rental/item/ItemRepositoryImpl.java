@@ -12,7 +12,6 @@ import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,8 +24,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Object[]> getList(RequestPageDTO requestPageDTO) {
-        List<Item> tuples = jpaQueryFactory.select(item)
+    public Page<Item> getList(RequestPageDTO requestPageDTO) {
+        List<Item> content = jpaQueryFactory.select(item)
             .from(item)
             .leftJoin(item.member, member).fetchJoin()
             .distinct()
@@ -38,12 +37,6 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .limit(requestPageDTO.getSize())
             .fetch();
 
-        List<Object[]> content = tuples.stream().map(item1 -> {
-            Object[] objects = new Object[2];
-            objects[0] = item1;
-            objects[1] = item1.getItemImages().get(0);
-            return objects;
-        }).collect(Collectors.toList());
 
         JPAQuery<Long> total = jpaQueryFactory.select(item.count())
             .from(item)
@@ -55,8 +48,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public Page<Object[]> getMyItemList(Member member, RequestPageDTO requestPageDTO) {
-        List<Item> tuples = jpaQueryFactory.select(item)
+    public Page<Item> getMyItemList(Member member, RequestPageDTO requestPageDTO) {
+        List<Item> content = jpaQueryFactory.select(item)
             .from(item)
             .leftJoin(item.member, QMember.member).fetchJoin()
             .distinct()
@@ -66,16 +59,10 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .limit(requestPageDTO.getSize())
             .fetch();
 
-        List<Object[]> content = tuples.stream().map(item1 -> {
-            Object[] objects = new Object[2];
-            objects[0] = item1;
-            objects[1] = item1.getItemImages().get(0);
-            return objects;
-        }).collect(Collectors.toList());
 
         JPAQuery<Long> total = jpaQueryFactory.select(item.count())
             .from(item)
-            .where(item.member.eq(member));
+            .where(item.member.eq(member).and(item.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
