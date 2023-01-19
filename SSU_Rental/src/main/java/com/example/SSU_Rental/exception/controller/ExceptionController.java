@@ -1,7 +1,9 @@
-package com.example.SSU_Rental.exception;
+package com.example.SSU_Rental.exception.controller;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import com.example.SSU_Rental.exception.ErrorResponse;
+import com.example.SSU_Rental.exception.SsuRentalException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
