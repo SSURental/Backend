@@ -12,6 +12,7 @@ import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -62,11 +63,11 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
 
     //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
     @Override
-    public Rating getRating(Long ratingId) {
-        return jpaQueryFactory.selectFrom(rating)
+    public Optional<Rating> getRating(Long ratingId) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(rating)
             .leftJoin(rating.member, QMember.member).fetchJoin()
             .leftJoin(rating.item, item).fetchJoin()
             .where(rating.id.eq(ratingId).and(rating.isDeleted.eq(false)))
-            .fetchOne();
+            .fetchOne());
     }
 }

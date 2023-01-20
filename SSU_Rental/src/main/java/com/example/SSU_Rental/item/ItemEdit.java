@@ -3,17 +3,19 @@ package com.example.SSU_Rental.item;
 import com.example.SSU_Rental.image.ImageDTO;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemEdit {
 
     private String itemName;
 
     private Integer price;
 
-    @Builder.Default
     private List<ImageDTO> imageDTOList = new ArrayList<>();
 
 

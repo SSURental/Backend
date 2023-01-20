@@ -9,6 +9,7 @@ import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -58,10 +59,10 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
     @Override
-    public Board getBoard(Long boardId) {
-        return jpaQueryFactory.selectFrom(QBoard.board)
+    public Optional<Board> getBoard(Long boardId) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(QBoard.board)
             .leftJoin(QBoard.board.member, member).fetchJoin()
             .where(QBoard.board.id.eq(boardId).and(QBoard.board.isDeleted.eq(false)))
-            .fetchOne();
+            .fetchOne());
     }
 }

@@ -2,7 +2,6 @@ package com.example.SSU_Rental.rating;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.notfound.ItemNotFound;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.exception.notfound.RatingNotFound;
@@ -84,14 +83,14 @@ public class RatingService {
     private Item getItem(Long itemId) {
         Item findItem = itemRepository.findById(itemId)
             .orElseThrow(() -> new ItemNotFound());
-        if(findItem.isDeleted()) throw new AlreadyDeletedException();
+        if(findItem.isDeleted()) throw new ItemNotFound();
         return findItem;
     }
 
     private Rating getRating(Long ratingId) {
         Rating findRating = ratingRepository.findById(ratingId)
             .orElseThrow(() -> new RatingNotFound());
-        if(findRating.isDeleted()) throw new AlreadyDeletedException();
+        if(findRating.isDeleted()) throw new RatingNotFound();
         return findRating;
     }
 

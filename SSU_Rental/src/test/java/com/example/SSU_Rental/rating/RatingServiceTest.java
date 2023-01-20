@@ -63,7 +63,7 @@ class RatingServiceTest {
             createUserSession(anotherMember));
 
         //Assert
-        Rating rating = ratingRepository.getRating(ratingId);
+        Rating rating = ratingRepository.getRating(ratingId).get();
         assertEquals(rating.getId(),ratingId);
         assertEquals(rating.getScore(),10);
         assertEquals(rating.getContent(),"좋아요");
@@ -159,7 +159,7 @@ class RatingServiceTest {
             createUserSession(anotherMember));
 
         //Assert
-        Rating findRating = ratingRepository.getRating(rating.getId());
+        Rating findRating = ratingRepository.findById(rating.getId()).get();
         assertEquals(findRating.getContent(),"좋아요");
         assertEquals(findRating.getScore(),10);
     }

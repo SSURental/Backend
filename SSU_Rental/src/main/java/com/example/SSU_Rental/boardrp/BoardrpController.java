@@ -42,11 +42,11 @@ public class BoardrpController {
 
 
     @PatchMapping("/boards/{boardId}/replys/{replyId}")
-    public ResponseEntity<Long> edit(@PathVariable Long boardId, @PathVariable Long replyId,
+    public ResponseEntity edit(@PathVariable Long boardId, @PathVariable Long replyId,
         @RequestBody BoardrpEdit editRequest, UserSession session) {
 
         boardrpService.edit(boardId, replyId, editRequest, session);
-        return ResponseEntity.ok().body(replyId);
+        return ResponseEntity.ok().build();
 
     }
 

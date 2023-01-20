@@ -1,35 +1,31 @@
 package com.example.SSU_Rental.board;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
-import com.example.SSU_Rental.common.Group;
+
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.LoginDTO;
-import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import com.example.SSU_Rental.member.MemberRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.servlet.http.Cookie;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
@@ -167,7 +163,6 @@ class BoardControllerTest {
                     .cookie(cookie))
             //Assert
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$").value(board.getId()))
             .andDo(print());
     }
 

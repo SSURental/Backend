@@ -2,7 +2,6 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.notfound.ItemNotFound;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.image.ItemImage;
@@ -37,14 +36,14 @@ public class ItemService {
 
 
     public ItemResponse getOne(Long itemId) {
-        Item item = itemRepository.getItem(itemId);
+        Item item = itemRepository.getItem(itemId).orElseThrow(() -> new ItemNotFound());
         return ItemResponse.from(item);
     }
 
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
         Page<Item> pageResult = itemRepository.getList(requestPageDTO);
-        Function<Item, ItemResponse> fn =(item -> ItemResponse.from(item));
+        Function<Item, ItemResponse> fn = (item -> ItemResponse.from(item));
         return new ResponsePageDTO(pageResult, fn);
     }
 
@@ -52,11 +51,11 @@ public class ItemService {
     @Transactional
     public void edit(Long itemId, ItemEdit editRequest, UserSession session) {
         Member loginMember = getMember(session.getId());
-        Item item = itemRepository.getItem(itemId);
+        Item item = itemRepository.getItem(itemId).orElseThrow(() -> new ItemNotFound());
         ItemEditorBuilder itemEditorBuilder = item.toEditor();
 
         List<ItemImage> itemImages = editRequest.getImageDTOList().stream().map(imageDTO -> {
-            return new ItemImage(imageDTO.getImgName(),item);
+            return new ItemImage(imageDTO.getImgName(), item);
         }).collect(Collectors.toList());
 
         ItemEditor itemEditor = itemEditorBuilder.itemName(editRequest.getItemName())
@@ -64,7 +63,7 @@ public class ItemService {
             .itemImages(itemImages)
             .build();
 
-        item.edit(itemEditor,loginMember);
+        item.edit(itemEditor, loginMember);
         return;
     }
 
@@ -86,10 +85,11 @@ public class ItemService {
     private Item getItem(Long itemId) {
         Item findItem = itemRepository.findById(itemId)
             .orElseThrow(() -> new ItemNotFound());
-        if(findItem.isDeleted()) throw new AlreadyDeletedException();
+        if (findItem.isDeleted()) {
+            throw new ItemNotFound();
+        }
         return findItem;
     }
-
 
 
 }

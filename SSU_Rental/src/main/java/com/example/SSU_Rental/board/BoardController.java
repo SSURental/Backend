@@ -76,11 +76,11 @@ public class BoardController {
 
 
     @PatchMapping("/boards/{boardId}")
-    public ResponseEntity<Long> edit(@PathVariable Long boardId,
+    public ResponseEntity edit(@PathVariable Long boardId,
         @RequestBody BoardEdit editRequest, UserSession session) {
 
         boardService.edit(boardId, editRequest, session);
-        return ResponseEntity.ok().body(boardId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/boards/{boardId}")

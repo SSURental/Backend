@@ -13,5 +13,5 @@ public interface BoardRepositoryCustom {
 
     Page<Board> getMyBoardList(Member member,RequestPageDTO requestPageDTO);
 
-    Board getBoard(Long boardId);
+    Optional<Board> getBoard(Long boardId);
 }

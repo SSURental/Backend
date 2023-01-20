@@ -12,6 +12,7 @@ import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -70,15 +71,15 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
     @Override
-    public Item getItem(Long itemId) {
+    public Optional<Item> getItem(Long itemId) {
 
-        Item item = jpaQueryFactory.select(QItem.item)
+        return Optional.ofNullable(jpaQueryFactory.select(QItem.item)
             .from(QItem.item)
             .leftJoin(QItem.item.member, member).fetchJoin()
             .leftJoin(QItem.item.itemImages, QItemImage.itemImage).fetchJoin()
             .distinct()
             .where(QItem.item.id.eq(itemId).and(QItem.item.isDeleted.eq(false)))
-            .fetchOne();
+            .fetchOne());
 
 //        Object[] objects = new Object[2];
 //        objects[0] = item;
@@ -86,6 +87,5 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 //        List<Object[]> content = new ArrayList<>();
 //        content.add(objects);
 
-        return item;
     }
 }

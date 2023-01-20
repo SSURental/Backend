@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.BoardNotFound;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
@@ -50,7 +51,7 @@ class BoardServiceTest {
         Long boardId = boardService.register(new BoardRequest("제목", "내용"), createUserSession(member));
 
         //Assert
-        Board findBoard = boardRepository.getBoard(boardId);
+        Board findBoard = boardRepository.getBoard(boardId).get();
         assertEquals(boardRepository.count(), 1L);
         assertEquals(findBoard.getId(), boardId);
         assertEquals(findBoard.getTitle(), "제목");
@@ -90,7 +91,7 @@ class BoardServiceTest {
         boardRepository.save(board);
 
         //Act
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(BoardNotFound.class, () -> {
             boardService.getOne(board.getId() + 10L);
         });
 
@@ -312,7 +313,7 @@ class BoardServiceTest {
     }
 
     private Board getBoard(Long boardId) {
-        return boardRepository.getBoard(boardId);
+        return boardRepository.getBoard(boardId).orElseThrow(()->new BoardNotFound());
     }
 
 

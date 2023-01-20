@@ -62,7 +62,7 @@ class BoardrpServiceTest {
             createUserSession(member));
 
         //Assert
-        Boardrp findBoardrp = boardrpRepository.getBoardrp(replyId);
+        Boardrp findBoardrp = boardrpRepository.getBoardrp(replyId).get();
         assertEquals(findBoardrp.getId(),replyId);
         assertEquals(findBoardrp.getContent(),"댓글");
         assertEquals(findBoardrp.getBoard().getId(),board.getId());
@@ -249,10 +249,10 @@ class BoardrpServiceTest {
     }
 
     private Board getBoard(Long boardId){
-        return boardRepository.getBoard(boardId);
+        return boardRepository.findById(boardId).get();
     }
 
     private Boardrp getBoardrp(Long boardrpId){
-        return boardrpRepository.getBoardrp(boardrpId);
+        return boardrpRepository.findById(boardrpId).get();
     }
 }

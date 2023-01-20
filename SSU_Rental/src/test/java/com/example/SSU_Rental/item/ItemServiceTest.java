@@ -7,6 +7,7 @@ import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.ItemNotFound;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
@@ -54,7 +55,7 @@ class ItemServiceTest {
         Long itemId = itemService.register(itemRequest, createUserSession(member));
 
         //Assert
-        Item item = itemRepository.getItem(itemId);
+        Item item = itemRepository.getItem(itemId).get();
         assertEquals(item.getId(),itemId);
         assertEquals(item.getItemName(),"아이템1");
         assertEquals(item.getPrice(),1000);
@@ -99,7 +100,7 @@ class ItemServiceTest {
         itemRepository.save(item);
 
         //Act
-        assertThrows(NullPointerException.class,()->{itemService.getOne(item.getId()+1L);});
+        assertThrows(ItemNotFound.class,()->{itemService.getOne(item.getId()+1L);});
 
 
     }
@@ -146,7 +147,7 @@ class ItemServiceTest {
         itemService.edit(item.getId(),ItemEdit.builder().itemName("아이템2").build(),createUserSession(member));
 
         //Assert
-        Item findItem = itemRepository.getItem(item.getId());
+        Item findItem = itemRepository.getItem(item.getId()).get();
         assertEquals(findItem.getItemName(),"아이템2");
         assertEquals(findItem.getPrice(),1000);
         assertEquals(findItem.getItemImages().get(0).getImgName(),"item-img01");

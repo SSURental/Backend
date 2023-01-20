@@ -16,6 +16,7 @@ import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
@@ -88,7 +89,7 @@ class MemberServiceTest {
         Long memberId = memberService.register(memberRequest);
 
         //Arrange
-        Member member = memberRepository.getMember(memberId);
+        Member member = memberRepository.getMember(memberId).get();
         Assertions.assertEquals(member.getLoginId(),"user1");
         Assertions.assertEquals(member.getPassword(),"password1");
         Assertions.assertEquals(member.getName(),"유저1");
@@ -139,17 +140,17 @@ class MemberServiceTest {
     /**
      * Test3은 테스트 가치가 있는지 잘 모르겠다.(너무 로직이 단순함)
      */
-//    @Test
-//    @DisplayName("잘못된 회원 아이디(혹은 삭제된 회원 아이디)로 멤버를 조회할 수 없습니다.")
-//    public void test3(){
-//        //Arrange
-//        Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
-//        memberRepository.save(member);
-//
-//        //Act
-//        assertThrows(NullPointerException.class,()->{memberService.getOne(member.getId()+2L);});
-//
-//    }
+    @Test
+    @DisplayName("잘못된 회원 아이디(혹은 삭제된 회원 아이디)로 멤버를 조회할 수 없습니다.")
+    public void test3(){
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "member-img01");
+        memberRepository.save(member);
+
+        //Act
+        assertThrows(MemberNotFound.class,()->{memberService.getOne(member.getId()+2L);});
+
+    }
 
 
     @Test
@@ -163,7 +164,7 @@ class MemberServiceTest {
         memberService.edit(member.getId(),new MemberEdit("유저2",new ImageDTO("")),createUserSession(member));
 
         //Assert
-        Member findMember = memberRepository.getMember(member.getId());
+        Member findMember = memberRepository.getMember(member.getId()).get();
         assertEquals(findMember.getName(),"유저2");
         assertEquals(findMember.getMemberImage().getImgName(),"member-img01");
 

@@ -39,7 +39,7 @@ public class ItemEditor {
         }
 
         public ItemEditor.ItemEditorBuilder price(final Integer price) {
-            if(price!=null&&price!=0){
+            if(price!=null&&price!=0&&price>=1000){
                 this.price = price;
             }
             return this;

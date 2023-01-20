@@ -55,14 +55,14 @@ public class MemberService {
     }
 
     public MemberResponse getOne(Long memberId) {
-        Member member = memberRepository.getMember(memberId);
+        Member member = memberRepository.getMember(memberId).orElseThrow(()->new MemberNotFound());
         return MemberResponse.from(member);
     }
 
 
     @Transactional
     public void edit(Long memberId, MemberEdit memberEdit, UserSession session) {
-        Member member = memberRepository.getMember(memberId);
+        Member member = memberRepository.getMember(memberId).orElseThrow(()-> new MemberNotFound());
         Member loginMember = getMember(session.getId());
 
         MemberEditorBuilder memberEditorBuilder = member.toEditor();

@@ -1,16 +1,15 @@
 package com.example.SSU_Rental.item;
 
-import static com.example.SSU_Rental.common.Group.*;
-import static com.example.SSU_Rental.item.ItemStatus.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.LoginDTO;
 import com.example.SSU_Rental.member.Member;
@@ -27,10 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -107,8 +103,8 @@ class ItemControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(item.getId()))
             .andExpect(jsonPath("$.itemName").value("아이템"))
-//            .andExpect(jsonPath("$.group").value(STUDENT))
-//            .andExpect(jsonPath("$.status").value(AVAILABLE))
+            .andExpect(jsonPath("$.group").value("STUDENT"))
+            .andExpect(jsonPath("$.status").value("AVAILABLE"))
             .andExpect(jsonPath("$.memberName").value("유저"))
             .andExpect(jsonPath("$.price").value(10000))
             .andExpect(jsonPath("$.imageDTOList[0].imgName").value("img01"))
@@ -135,6 +131,48 @@ class ItemControllerTest {
             .andExpect(jsonPath("$.size", is(5)))
             .andExpect(jsonPath("$.totalPage", is(5)))
             .andExpect(jsonPath("$.hasNext", is(true)))
+            .andExpect(jsonPath("$.contents[0].itemName").value("아이템21"))
+            .andExpect(jsonPath("$.contents[0].group").value("STUDENT"))
+            .andExpect(jsonPath("$.contents[0].status").value("AVAILABLE"))
+            .andExpect(jsonPath("$.contents[0].memberName").value("유저"))
+            .andExpect(jsonPath("$.contents[0].price").value(21000))
+            .andExpect(jsonPath("$.contents[0].imageDTOList[0].imgName").value("img21"))
+            .andExpect(jsonPath("$.contents[0].imageDTOList[1].imgName").value("image21"))
+            .andDo(print());
+    }
+    @Test
+    @DisplayName("아이템 수정")
+    public void test5() throws Exception {
+        //Arrange
+        Member member = createMember("user1", "password1", "유저", "STUDENT", "img01");
+        memberRepository.save(member);
+        Cookie cookie = createCookie(member);
+        Item item = createItem("아이템", 10000, "img01", "img02", member);
+        itemRepository.save(item);
+        ItemEdit itemEdit = new ItemEdit("아이템수정", 15000);
+        String json = objectMapper.writeValueAsString(itemEdit);
+
+        //Act
+        mockMvc.perform(patch("/items/{itemId}",item.getId()).contentType(APPLICATION_JSON).content(json).cookie(cookie))
+            //Assert
+            .andExpect(status().isOk())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("아이템 삭제")
+    public void test6() throws Exception {
+        //Arrange
+        Member member = createMember("user1", "password1", "유저", "STUDENT", "img01");
+        memberRepository.save(member);
+        Cookie cookie = createCookie(member);
+        Item item = createItem("아이템", 10000, "img01", "img02", member);
+        itemRepository.save(item);
+
+        //Act
+        mockMvc.perform(delete("/items/{itemId}",item.getId()).cookie(cookie))
+            //Assert
+            .andExpect(status().isOk())
             .andDo(print());
     }
 

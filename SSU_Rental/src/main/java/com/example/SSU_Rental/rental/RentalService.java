@@ -2,7 +2,6 @@ package com.example.SSU_Rental.rental;
 
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.notfound.ItemNotFound;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.exception.notfound.RentalNotFound;
@@ -36,7 +35,7 @@ public class RentalService {
     }
 
     public RentalResponse getOne(Long itemId, Long rentalId) {
-        Rental rental = rentalRepository.getRental(rentalId);
+        Rental rental = rentalRepository.getRental(rentalId).orElseThrow(()-> new RentalNotFound());
         return RentalResponse.from(rental);
     }
 
@@ -70,7 +69,7 @@ public class RentalService {
     private Item getItem(Long itemId) {
         Item findItem = itemRepository.findById(itemId)
             .orElseThrow(() -> new ItemNotFound());
-        if(findItem.isDeleted()) throw new AlreadyDeletedException();
+        if(findItem.isDeleted()) throw new ItemNotFound();
         return findItem;
     }
 
@@ -83,7 +82,7 @@ public class RentalService {
     private Rental getRental(Long rentalId) {
         Rental findRental = rentalRepository.findById(rentalId)
             .orElseThrow(() -> new RentalNotFound());
-        if(findRental.isDeleted()) throw new AlreadyDeletedException();
+        if(findRental.isDeleted()) throw new RentalNotFound();
         return findRental;
     }
 

@@ -5,7 +5,6 @@ import com.example.SSU_Rental.board.BoardRepository;
 import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.AlreadyDeletedException;
 import com.example.SSU_Rental.exception.notfound.BoardNotFound;
 import com.example.SSU_Rental.exception.notfound.BoardrpNotFound;
 import com.example.SSU_Rental.exception.notfound.MemberNotFound;
@@ -76,7 +75,7 @@ public class BoardrpService {
     public Board getBoard(Long boardId) {
         Board findBoard = boardRepository.findById(boardId)
             .orElseThrow(() -> new BoardNotFound());
-        if(findBoard.isDeleted()) throw new AlreadyDeletedException();
+        if(findBoard.isDeleted()) throw new BoardNotFound();
         return findBoard;
 
     }
@@ -84,7 +83,7 @@ public class BoardrpService {
     public Boardrp getReply(Long replyId) {
         Boardrp findBoardrp = boardrpRepository.findById(replyId)
             .orElseThrow(() -> new BoardrpNotFound());
-        if(findBoardrp.isDeleted())throw new AlreadyDeletedException();
+        if(findBoardrp.isDeleted())throw new BoardrpNotFound();
         return findBoardrp;
     }
 

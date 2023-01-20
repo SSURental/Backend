@@ -4,12 +4,13 @@ import com.example.SSU_Rental.common.Enum;
 import com.example.SSU_Rental.common.Group;
 import com.example.SSU_Rental.image.ImageDTO;
 import javax.validation.constraints.NotEmpty;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberRequest {
 
     @NotEmpty(message = "로그인 아이디는 공백이 될 수 없습니다.")

@@ -1,7 +1,9 @@
 package com.example.SSU_Rental.member;
 
+import java.util.Optional;
+
 public interface MemberRepositoryCustom {
 
-    Member getMember(Long memberId);
+    Optional<Member> getMember(Long memberId);
 
 }
