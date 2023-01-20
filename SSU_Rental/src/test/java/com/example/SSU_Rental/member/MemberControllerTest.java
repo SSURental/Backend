@@ -20,7 +20,14 @@ import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.item.ItemRequest;
 import com.example.SSU_Rental.login.LoginDTO;
+import com.example.SSU_Rental.rating.Rating;
+import com.example.SSU_Rental.rating.RatingRepository;
+import com.example.SSU_Rental.rating.RatingRequest;
+import com.example.SSU_Rental.rental.Rental;
+import com.example.SSU_Rental.rental.RentalRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -57,10 +64,18 @@ class MemberControllerTest {
     @Autowired
     private ItemRepository itemRepository;
 
+    @Autowired
+    private RatingRepository ratingRepository;
+
+    @Autowired
+    private RentalRepository rentalRepository;
+
     @BeforeEach
     public void clear() {
         boardrpRepository.deleteAll();
         boardRepository.deleteAll();
+        ratingRepository.deleteAll();
+        rentalRepository.deleteAll();
         itemRepository.deleteAll();
         memberRepository.deleteAll();
     }
@@ -237,6 +252,78 @@ class MemberControllerTest {
 
     }
 
+    @Test
+    @DisplayName("내가 한 리뷰 목록 보기")
+    public void test8() throws Exception {
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "img02");
+        memberRepository.save(anotherMember);
+        Cookie cookie = createCookie(anotherMember);
+        List<Item> items = IntStream.rangeClosed(1, 21)
+            .mapToObj(i -> createItem("아이템" + i, i * 1000,"img"+i,"image"+i ,member)).collect(Collectors.toList());
+        itemRepository.saveAll(items);
+        int idx = 1;
+        List<Rating> ratings = new ArrayList<>();
+        for (Item item : items) {
+            ratings.add(createRating(anotherMember,item,10,"좋아요"+idx));
+            idx++;
+        }
+        ratingRepository.saveAll(ratings);
+
+        //Act
+        mockMvc.perform(get("/members/ratings?page=1&size=5").cookie(cookie))
+            //Assert
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.page", is(1)))
+            .andExpect(jsonPath("$.size", is(5)))
+            .andExpect(jsonPath("$.totalPage", is(5)))
+            .andExpect(jsonPath("$.hasNext", is(true)))
+            .andExpect(jsonPath("$.contents[0].score",is(10)))
+            .andExpect(jsonPath("$.contents[0].nickname").value("유저2"))
+            .andExpect(jsonPath("$.contents[0].content").value("좋아요21"))
+            .andExpect(jsonPath("$.contents[0].itemId").value(items.get(20).getId()))
+            .andDo(print());
+
+
+    }
+
+    @Test
+    @DisplayName("내가 한 렌탈 목록 보기")
+    public void test9() throws Exception {
+        //Arrange
+        Member member = createMember("user1", "password1", "유저1", "STUDENT", "img01");
+        memberRepository.save(member);
+        Member anotherMember = createMember("user2", "password2", "유저2", "STUDENT", "img02");
+        memberRepository.save(anotherMember);
+        Cookie cookie = createCookie(anotherMember);
+        List<Item> items = IntStream.rangeClosed(1, 21)
+            .mapToObj(i -> createItem("아이템" + i, i * 1000,"img"+i,"image"+i ,member)).collect(Collectors.toList());
+        itemRepository.saveAll(items);
+        List<Rental> rentals = new ArrayList<>();
+        for (Item item : items) {
+            rentals.add(createRental(anotherMember,item));
+        }
+        rentalRepository.saveAll(rentals);
+
+        //Act
+        mockMvc.perform(get("/members/rentals?page=1&size=5").cookie(cookie))
+            //Assert
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.page", is(1)))
+            .andExpect(jsonPath("$.size", is(5)))
+            .andExpect(jsonPath("$.totalPage", is(5)))
+            .andExpect(jsonPath("$.hasNext", is(true)))
+            .andExpect(jsonPath("$.contents[0].itemId").value(items.get(20).getId()))
+            .andExpect(jsonPath("$.contents[0].itemName").value("아이템21"))
+            .andExpect(jsonPath("$.contents[0].nickname").value("유저2"))
+            .andExpect(jsonPath("$.contents[0].startDate").value(LocalDate.now().toString()))
+            .andExpect(jsonPath("$.contents[0].endDate").value(LocalDate.now().plusDays(7).toString()))
+            .andExpect(jsonPath("$.contents[0].imageDTO.imgName").value("img21"))
+            .andDo(print());
+    }
+
 
     private Member createMember(String loginId, String password, String name, String group,
         String imgName) {
@@ -274,5 +361,12 @@ class MemberControllerTest {
         itemRequest.getImageDTOList().add(new ImageDTO(imgName1));
         itemRequest.getImageDTOList().add(new ImageDTO(imgName2));
         return Item.createItem(itemRequest, member);
+    }
+
+    private Rating createRating(Member loginMember,Item item,Integer score,String content){
+        return Rating.createRating(loginMember,item,new RatingRequest(score,content));
+    }
+    private Rental createRental(Member loginMember, Item item){
+        return item.rental(loginMember);
     }
 }

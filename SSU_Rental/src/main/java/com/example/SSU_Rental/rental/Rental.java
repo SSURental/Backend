@@ -1,7 +1,9 @@
 package com.example.SSU_Rental.rental;
 
 import com.example.SSU_Rental.exception.BadRequestException;
+import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.RentalNotFound;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
 import java.time.LocalDate;
@@ -77,13 +79,16 @@ public class Rental {
         }
 
         if(this.item.getId()!=item.getId()){
-            throw new BadRequestException();
+            throw new RentalNotFound();
         }
 
     }
 
     public void extendRental(Member loginMember,Item item) {
         validate(loginMember,item);
+        if(this.endDate.isAfter(LocalDate.now())){
+            throw new ConflictException();
+        }
         this.endDate = this.endDate.plusDays(7);
 
     }

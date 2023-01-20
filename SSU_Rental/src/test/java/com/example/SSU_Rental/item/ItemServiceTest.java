@@ -214,8 +214,16 @@ class ItemServiceTest {
      */
 
 
-    private Member createMember(String loginId, String password,String name,String group, String imageName){
-        return Member.createMember(new MemberRequest(loginId,password,name,group,new ImageDTO(imageName)));
+    private Member createMember(String loginId, String password, String name, String group,
+        String imgName) {
+        return Member.createMember(
+            MemberRequest.builder()
+                .loginId(loginId)
+                .password(password)
+                .name(name)
+                .group(group)
+                .imageDTO(new ImageDTO(imgName))
+                .build());
     }
 
     private Item createItem(String itemName,int price,String imgName1,String imgName2,Member member){

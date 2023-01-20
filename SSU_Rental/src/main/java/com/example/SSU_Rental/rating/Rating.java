@@ -3,6 +3,7 @@ package com.example.SSU_Rental.rating;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.RatingNotFound;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.rating.RatingEditor.RatingEditorBuilder;
@@ -78,7 +79,7 @@ public class Rating {
         }
 
         if(this.item.getId()!=item.getId()){
-            throw new BadRequestException();
+            throw new RatingNotFound();
         }
 
     }

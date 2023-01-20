@@ -10,6 +10,7 @@ import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.BoardrpNotFound;
 import com.example.SSU_Rental.image.ImageDTO;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
@@ -157,7 +158,7 @@ class BoardrpServiceTest {
 
         //Act
         assertThrows(
-            BadRequestException.class,()->boardrpService.edit(anotherboard.getId(), boardrp.getId(), new BoardrpEdit("내용-수정"),createUserSession(member)));
+            BoardrpNotFound.class,()->boardrpService.edit(anotherboard.getId(), boardrp.getId(), new BoardrpEdit("내용-수정"),createUserSession(member)));
 
     }
 
@@ -221,7 +222,7 @@ class BoardrpServiceTest {
 
         //Act
         assertThrows(
-            BadRequestException.class,()->boardrpService.delete(anotherboard.getId(), boardrp.getId(),createUserSession(member)));
+            BoardrpNotFound.class,()->boardrpService.delete(anotherboard.getId(), boardrp.getId(),createUserSession(member)));
 
     }
 
@@ -232,10 +233,17 @@ class BoardrpServiceTest {
 
 
 
-    private Member createMember(String loginId, String password,String name,String group, String imageName){
-        return Member.createMember(new MemberRequest(loginId,password,name,group,new ImageDTO(imageName)));
+    private Member createMember(String loginId, String password, String name, String group,
+        String imgName) {
+        return Member.createMember(
+            MemberRequest.builder()
+                .loginId(loginId)
+                .password(password)
+                .name(name)
+                .group(group)
+                .imageDTO(new ImageDTO(imgName))
+                .build());
     }
-
     private Board createBoard(String title,String content,Member member){
         return Board.createBoard(new BoardRequest(title,content),member);
     }

@@ -28,14 +28,11 @@ public class BoardrpService {
 
     @Transactional
     public Long register(Long boardId, BoardrpRequest boardrpRequest, UserSession session) {
-
         Member loginMember = getMember(session.getId());
         Board board = getBoard(boardId);
         Boardrp boardrp = Boardrp.createBoardrp(board, loginMember, boardrpRequest);
         boardrpRepository.save(boardrp);
-        board.addBoard(boardrp);
         return boardrp.getId();
-
     }
 
     public ResponsePageDTO getList(Long boardId, RequestPageDTO requestPageDTO) {

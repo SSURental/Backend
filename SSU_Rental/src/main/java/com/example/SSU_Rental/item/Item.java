@@ -135,15 +135,11 @@ public class Item extends BaseEntity {
 
     public Rental rental(Member loginMember) {
 
-        if(this.member.getId()==loginMember.getId()){
+        if(this.member.getId()==loginMember.getId()||status!=ItemStatus.AVAILABLE){
             throw new ConflictException();
         }
 
-        if(status!=ItemStatus.AVAILABLE){
-            throw new BadRequestException();
-        }else {
             this.status = ItemStatus.LOAN;
-        }
 
 
         return Rental.builder()

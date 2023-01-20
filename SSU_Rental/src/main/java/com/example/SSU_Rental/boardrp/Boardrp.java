@@ -6,6 +6,7 @@ import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.BoardrpNotFound;
 import com.example.SSU_Rental.member.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,12 +55,14 @@ public class Boardrp extends BaseEntity {
     }
 
     public static Boardrp createBoardrp(Board board,Member member, BoardrpRequest boardrpRequest){
-        return Boardrp.builder()
+        Boardrp boardrp = Boardrp.builder()
             .board(board)
             .member(member)
             .content(boardrpRequest.getContent())
             .isDeleted(false)
             .build();
+        board.addBoard(boardrp);
+        return boardrp;
     }
 
     private void validate(Member member,Board board){
@@ -69,7 +72,7 @@ public class Boardrp extends BaseEntity {
         }
 
         if(this.board.getId()!=board.getId()){
-            throw new BadRequestException();
+            throw new BoardrpNotFound();
         }
     }
 

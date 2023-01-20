@@ -2,6 +2,7 @@ package com.example.SSU_Rental.board;
 
 import com.example.SSU_Rental.board.BoardEditor.BoardEditorBuilder;
 import com.example.SSU_Rental.boardrp.Boardrp;
+import com.example.SSU_Rental.boardrp.BoardrpRequest;
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.member.Member;
@@ -134,5 +135,9 @@ public class Board extends BaseEntity {
     }
 
 
-
+    public Boardrp createBoardrp(Member loginMember, BoardrpRequest boardrpRequest) {
+        Boardrp boardrp = Boardrp.createBoardrp(this, loginMember, boardrpRequest);
+        this.boardrpList.add(boardrp);
+        return boardrp;
+    }
 }
