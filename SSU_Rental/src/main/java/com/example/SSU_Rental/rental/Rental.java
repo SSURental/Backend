@@ -1,6 +1,5 @@
 package com.example.SSU_Rental.rental;
 
-import com.example.SSU_Rental.exception.BadRequestException;
 import com.example.SSU_Rental.exception.ConflictException;
 import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.exception.notfound.RentalNotFound;
@@ -86,7 +85,7 @@ public class Rental {
 
     public void extendRental(Member loginMember,Item item) {
         validate(loginMember,item);
-        if(this.endDate.isAfter(LocalDate.now())){
+        if(LocalDate.now().isAfter(this.endDate)){
             throw new ConflictException();
         }
         this.endDate = this.endDate.plusDays(7);
