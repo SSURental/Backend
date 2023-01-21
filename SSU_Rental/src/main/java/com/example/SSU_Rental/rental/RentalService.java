@@ -1,12 +1,10 @@
 package com.example.SSU_Rental.rental;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.ITEM_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.RENTAL_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.ItemNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
+import com.example.SSU_Rental.exception.notfound.RentalNotFound;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.login.UserSession;
@@ -29,28 +27,22 @@ public class RentalService {
 
     @Transactional
     public Long rental(Long itemId, UserSession session) {
-
         Item item = getItem(itemId);
-
-        Member member = getMember(session.getId());
-
-        item.rental(member);
-
-        Rental rental = Rental.createRental(item, member);
+        Member loginMember = getMember(session.getId());
+        Rental rental = item.rental(loginMember);
         rentalRepository.save(rental);
         return rental.getId();
-
     }
 
     public RentalResponse getOne(Long itemId, Long rentalId) {
-        Rental rental = getRental(rentalId);
+        Rental rental = rentalRepository.getRental(rentalId).orElseThrow(()-> new RentalNotFound());
         return RentalResponse.from(rental);
     }
 
     public ResponsePageDTO getList(RequestPageDTO requestPageDTO, UserSession session) {
 
-        Member member = getMember(session.getId());
-        Page<Rental> myRentalList = rentalRepository.getList(member, requestPageDTO);
+        Member loginMember = getMember(session.getId());
+        Page<Rental> myRentalList = rentalRepository.getList(loginMember, requestPageDTO);
         Function<Rental, RentalResponse> fn = (rental -> RentalResponse.from(rental));
         return new ResponsePageDTO(myRentalList, fn);
     }
@@ -60,9 +52,8 @@ public class RentalService {
 
         Item item = getItem(itemId);
         Rental rental = getRental(rentalId);
-        Member member = getMember(session.getId());
-        rental.validate(member, item);
-        rental.extendRental();
+        Member loginMember = getMember(session.getId());
+        rental.extendRental(loginMember,item);
         return RentalResponse.from(rental);
     }
 
@@ -70,29 +61,29 @@ public class RentalService {
     @Transactional
     public void returnItem(Long itemId, Long rentalId, UserSession session) {
         Rental rental = getRental(rentalId);
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        rental.validate(member, item);
-        rentalRepository.delete(rental);
-        item.returnItem();
+        item.returnItem(rental,loginMember);
     }
 
     private Item getItem(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-            .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND_ERROR));
-        return item;
+        Item findItem = itemRepository.findById(itemId)
+            .orElseThrow(() -> new ItemNotFound());
+        if(findItem.isDeleted()) throw new ItemNotFound();
+        return findItem;
     }
 
     private Member getMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
+            .orElseThrow(() -> new MemberNotFound());
         return member;
     }
 
     private Rental getRental(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId)
-            .orElseThrow(() -> new CustomException((RENTAL_NOT_FOUND_ERROR)));
-        return rental;
+        Rental findRental = rentalRepository.findById(rentalId)
+            .orElseThrow(() -> new RentalNotFound());
+        if(findRental.isDeleted()) throw new RentalNotFound();
+        return findRental;
     }
 
 

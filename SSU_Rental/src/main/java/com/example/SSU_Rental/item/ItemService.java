@@ -1,17 +1,14 @@
 package com.example.SSU_Rental.item;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.ITEM_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.ItemNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.login.UserSession;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,38 +25,37 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Long register(ItemRequest itemRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
-        Item item = Item.createItem(itemRequest, member);
+        Member loginMember = getMember(session.getId());
+        Item item = Item.createItem(itemRequest, loginMember);
         itemRepository.save(item);
         return item.getId();
     }
 
+
+    public ItemResponse getOne(Long itemId) {
+        Item item = itemRepository.getItem(itemId).orElseThrow(() -> new ItemNotFound());
+        return ItemResponse.from(item);
+    }
+
     public ResponsePageDTO getItemList(RequestPageDTO requestPageDTO) {
 
-        Page<Object[]> pageResult = itemRepository.getList(requestPageDTO);
-        Function<Object[], ItemResponse> fn = (obj -> ItemResponse.from((Item) obj[0],
-            Arrays.asList((ItemImage) obj[1])));
+        Page<Item> pageResult = itemRepository.getList(requestPageDTO);
+        Function<Item, ItemResponse> fn = (item -> ItemResponse.from(item));
         return new ResponsePageDTO(pageResult, fn);
     }
 
 
-    public ItemResponse getOne(Long itemId) {
-        List<Object[]> result = itemRepository.getItem(itemId);
-        return ItemResponse.from((Item) result.get(0)[0], (List<ItemImage>) result.get(0)[1]);
-    }
-
     @Transactional
     public void edit(Long itemId, ItemEdit editRequest, UserSession session) {
-        Member member = getMember(session.getId());
-        Item item = getItem(itemId);
-        item.validate(member);
+        Member loginMember = getMember(session.getId());
+        Item item = itemRepository.getItem(itemId).orElseThrow(() -> new ItemNotFound());
         ItemEditorBuilder itemEditorBuilder = item.toEditor();
 
         List<ItemImage> itemImages = editRequest.getImageDTOList().stream().map(imageDTO -> {
-            return new ItemImage(imageDTO.getImgName(),item);
+            return new ItemImage(imageDTO.getImgName(), item);
         }).collect(Collectors.toList());
 
         ItemEditor itemEditor = itemEditorBuilder.itemName(editRequest.getItemName())
@@ -67,31 +63,33 @@ public class ItemService {
             .itemImages(itemImages)
             .build();
 
-        item.edit(itemEditor);
+        item.edit(itemEditor, loginMember);
         return;
     }
 
     @Transactional
     public void delete(Long itemId, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-        item.validate(member);
-        itemRepository.delete(item);
+        item.delete(loginMember);
     }
 
 
     private Member getMember(Long memberId) {
-
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException((MEMBER_NOT_FOUND_ERROR)));
+            .orElseThrow(() -> new MemberNotFound());
     }
 
+    // 간단한 조회일때는 findById, 연관관계 다 끌고 와야 할때는 Itemrepository.getItem();
     private Item getItem(Long itemId) {
-        return itemRepository.findById(itemId)
-            .orElseThrow(() -> new CustomException((ITEM_NOT_FOUND_ERROR)));
+        Item findItem = itemRepository.findById(itemId)
+            .orElseThrow(() -> new ItemNotFound());
+        if (findItem.isDeleted()) {
+            throw new ItemNotFound();
+        }
+        return findItem;
     }
-
 
 
 }

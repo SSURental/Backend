@@ -41,10 +41,10 @@ public class MemberController {
      */
 
     @PatchMapping("/members/{memberId}")
-    private ResponseEntity<Long> edit(@PathVariable Long memberId,
+    private ResponseEntity edit(@PathVariable Long memberId,
         @RequestBody MemberEdit memberEdit, UserSession session) {
         memberService.edit(memberId, memberEdit, session);
-        return ResponseEntity.ok().body(memberId);
+        return ResponseEntity.ok().build();
     }
 
     /**

@@ -1,15 +1,23 @@
 package com.example.SSU_Rental.rental;
 
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.exception.ConflictException;
+import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.RentalNotFound;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.member.Member;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
@@ -30,43 +38,63 @@ public class Rental {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
+
+    private boolean isDeleted;
 
     @Builder
-    public Rental(Long id, Member member, Item item, LocalDateTime startDate,
-        LocalDateTime endDate) {
+    public Rental(Long id, Member member, Item item, LocalDate startDate,
+        LocalDate endDate,boolean isDeleted) {
         this.id = id;
         this.member = member;
         this.item = item;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.isDeleted = isDeleted;
     }
 
-    public static Rental createRental(Item item, Member member) {
-        return Rental.builder()
-            .member(member)
-            .item(item)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(7))
-            .build();
-    }
+//    public static Rental createRental(Item item, Member loginMember) {
+//
+//        if(item.getMember().getId()==loginMember.getId()){
+//            throw new ConflictException();
+//        }
+//
+//        item.rental(loginMember);
+//
+//        return Rental.builder()
+//            .member(loginMember)
+//            .item(item)
+//            .startDate(LocalDateTime.now())
+//            .endDate(LocalDateTime.now().plusDays(7))
+//            .isDeleted(false)
+//            .build();
+//    }
 
-    public void validate(Member member,Item item) {
+    private void validate(Member member,Item item) {
         if(this.member.getId() != member.getId()){
-            throw new CustomException(ErrorMessage.FORBIDDEN_ERROR);
+            throw new ForbiddenException();
         }
 
         if(this.item.getId()!=item.getId()){
-            throw new IllegalArgumentException("아이템 아이디 혹은 렌탈 아이디가 잘못 되었습니다.");
+            throw new RentalNotFound();
         }
 
     }
 
-    public void extendRental() {
-
+    public void extendRental(Member loginMember,Item item) {
+        validate(loginMember,item);
+        if(LocalDate.now().isAfter(this.endDate)){
+            throw new ConflictException();
+        }
         this.endDate = this.endDate.plusDays(7);
 
+    }
+
+    public void delete(Member loginMember, Item item){
+        validate(loginMember,item);
+//        if(this.isDeleted==true) throw new AlreadyDeletedException(); 이미 리포지터리에서 조회할 떄 삭제 여부를 검사한다.
+        this.isDeleted = true;
     }
 }

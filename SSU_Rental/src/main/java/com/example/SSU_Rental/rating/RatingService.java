@@ -1,12 +1,10 @@
 package com.example.SSU_Rental.rating;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.ITEM_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.MEMBER_NOT_FOUND_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.RATING_NOT_FOUND_ERROR;
-
 import com.example.SSU_Rental.common.RequestPageDTO;
 import com.example.SSU_Rental.common.ResponsePageDTO;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.notfound.ItemNotFound;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
+import com.example.SSU_Rental.exception.notfound.RatingNotFound;
 import com.example.SSU_Rental.item.Item;
 import com.example.SSU_Rental.item.ItemRepository;
 import com.example.SSU_Rental.login.UserSession;
@@ -31,14 +29,9 @@ public class RatingService {
     @Transactional
     public Long register(Long itemId, RatingRequest ratingRequest, UserSession session) {
 
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Item item = getItem(itemId);
-
-        if(item.getMember().getId()==member.getId()){
-            throw new IllegalArgumentException("자신이 등록한 아이템에 대해 자신이 평가를 내릴 수는 없습니다.");
-        }
-
-        Rating rating = Rating.makeRatingOne(member, item, ratingRequest);
+        Rating rating = Rating.createRating(loginMember, item, ratingRequest);
         ratingRepository.save(rating);
         return rating.getId();
     }
@@ -47,7 +40,7 @@ public class RatingService {
         Item item = getItem(itemId);
 
         return ratingRepository.findByItemForAvg(item)
-            .orElseThrow(() -> new IllegalArgumentException("점수가 없습니다."));
+            .orElseThrow(() -> new RatingNotFound());
     }
 
     public ResponsePageDTO getList(Long itemId, RequestPageDTO requestPageDTO) {
@@ -60,44 +53,45 @@ public class RatingService {
 
 
     @Transactional
-    public void modify(Long itemId, Long ratingId, RatingEdit editRequest,
+    public void edit(Long itemId, Long ratingId, RatingEdit editRequest,
         UserSession session) {
         Item item = getItem(itemId);
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Rating rating = getRating(ratingId);
-        rating.validate(member, item);
         RatingEditorBuilder ratingEditorBuilder = rating.toEditor();
         RatingEditor editor = ratingEditorBuilder.content(editRequest.getContent())
             .score(editRequest.getScore())
             .build();
-        rating.edit(editor);
+        rating.edit(editor,loginMember,item);
         return;
     }
 
 
     @Transactional
-    public void remove(Long itemId, Long ratingId, UserSession session) {
+    public void delete(Long itemId, Long ratingId, UserSession session) {
         Item item = getItem(itemId);
-        Member member = getMember(session.getId());
+        Member loginMember = getMember(session.getId());
         Rating rating = getRating(ratingId);
-        rating.validate(member, item);
-        ratingRepository.delete(rating);
-
+        rating.delete(loginMember, item);
     }
 
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_ERROR));
+            .orElseThrow(() -> new MemberNotFound());
     }
 
     private Item getItem(Long itemId) {
-        return itemRepository.findById(itemId)
-            .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND_ERROR));
+        Item findItem = itemRepository.findById(itemId)
+            .orElseThrow(() -> new ItemNotFound());
+        if(findItem.isDeleted()) throw new ItemNotFound();
+        return findItem;
     }
 
     private Rating getRating(Long ratingId) {
-        return ratingRepository.findById(ratingId)
-            .orElseThrow(() -> new CustomException(RATING_NOT_FOUND_ERROR));
+        Rating findRating = ratingRepository.findById(ratingId)
+            .orElseThrow(() -> new RatingNotFound());
+        if(findRating.isDeleted()) throw new RatingNotFound();
+        return findRating;
     }
 
 

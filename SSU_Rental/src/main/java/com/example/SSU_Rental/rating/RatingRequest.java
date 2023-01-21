@@ -1,10 +1,14 @@
 package com.example.SSU_Rental.rating;
 
 import javax.validation.constraints.NotBlank;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RatingRequest {
 
 
@@ -14,6 +18,7 @@ public class RatingRequest {
     @NotBlank(message = "리뷰는 공백이 될 수 없습니다.")
     private String content;
 
+    @Builder
     public RatingRequest(int score, String content) {
         this.score = score;
         this.content = content;

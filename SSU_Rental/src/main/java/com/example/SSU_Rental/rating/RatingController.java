@@ -36,7 +36,6 @@ public class RatingController {
 
 
     @GetMapping("/items/{itemId}/ratings/scores")
-
     public ResponseEntity<Double> getAvgScores(
         @PathVariable Long itemId) {
         return ResponseEntity.ok().body(ratingService.getAvgScores(itemId));
@@ -52,21 +51,21 @@ public class RatingController {
 
 
     @PatchMapping("/items/{itemId}/ratings/{ratingId}")
-    public ResponseEntity<ResponsePageDTO> edit(
+    public ResponseEntity edit(
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
         @RequestBody RatingEdit editRequest, UserSession session) {
-        ratingService.modify(itemId, ratingId, editRequest, session);
+        ratingService.edit(itemId, ratingId, editRequest, session);
         return ResponseEntity.ok().build();
     }
 
 
     @DeleteMapping("/items/{itemId}/ratings/{ratingId}")
-    public ResponseEntity<ResponsePageDTO> delete(
+    public ResponseEntity delete(
         @PathVariable Long itemId,
         @PathVariable Long ratingId,
         UserSession session) {
-        ratingService.remove(itemId, ratingId, session);
+        ratingService.delete(itemId, ratingId, session);
         return ResponseEntity.ok().build();
     }
 

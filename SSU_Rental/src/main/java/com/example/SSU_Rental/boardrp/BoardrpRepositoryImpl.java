@@ -11,6 +11,7 @@ import com.example.SSU_Rental.member.QMember;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -26,7 +27,7 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
         List<Boardrp> content = jpaQueryFactory.selectFrom(boardrp)
             .leftJoin(boardrp.member, member).fetchJoin()
             .leftJoin(boardrp.board, QBoard.board).fetchJoin()
-            .where(boardrp.board.eq(board))
+            .where(boardrp.board.eq(board).and(boardrp.isDeleted.eq(false)))
             .orderBy(boardrp.id.desc())
             .offset(requestPageDTO.getOffset())
             .limit(requestPageDTO.getSize())
@@ -34,7 +35,7 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(boardrp.count())
             .from(boardrp)
-            .where(boardrp.board.eq(board));
+            .where(boardrp.board.eq(board).and(boardrp.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
@@ -46,7 +47,7 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
         List<Boardrp> content = jpaQueryFactory.selectFrom(boardrp)
             .leftJoin(boardrp.member, QMember.member).fetchJoin()
             .leftJoin(boardrp.board, QBoard.board).fetchJoin()
-            .where(boardrp.member.eq(member))
+            .where(boardrp.member.eq(member).and(boardrp.isDeleted.eq(false)))
             .orderBy(boardrp.id.desc())
             .offset(requestPageDTO.getOffset())
             .limit(requestPageDTO.getSize())
@@ -54,9 +55,19 @@ public class BoardrpRepositoryImpl implements BoardrpRepositoryCustom {
 
         JPAQuery<Long> total = jpaQueryFactory.select(boardrp.count())
             .from(boardrp)
-            .where(boardrp.member.eq(member));
+            .where(boardrp.member.eq(member).and(boardrp.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(content, requestPageDTO.getPageable(),
             total::fetchOne);
+    }
+
+    //연관관계를 다 끌어와야 할때는 get~() 사용, 연관관계 필요없는 때는 findById 사용
+    @Override
+    public Optional<Boardrp> getBoardrp(Long boardrpId) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(boardrp)
+            .leftJoin(boardrp.member, QMember.member).fetchJoin()
+            .leftJoin(boardrp.board, QBoard.board).fetchJoin()
+            .where(boardrp.id.eq(boardrpId).and(boardrp.isDeleted.eq(false)))
+            .fetchOne());
     }
 }

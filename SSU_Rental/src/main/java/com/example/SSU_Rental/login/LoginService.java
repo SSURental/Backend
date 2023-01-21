@@ -1,7 +1,6 @@
 package com.example.SSU_Rental.login;
 
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.exception.notfound.MemberNotFound;
 import com.example.SSU_Rental.member.Member;
 import com.example.SSU_Rental.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class LoginService {
 
         Member member = memberRepository.findByLoginIdAndPassword(loginDTO.getLoginId(),
                 loginDTO.getPassword())
-            .orElseThrow(() -> new CustomException(ErrorMessage.INVALID_LOGIN_REQUEST_ERROR));
+            .orElseThrow(() -> new MemberNotFound());
 
         String accessToken = member.addSession();
         return accessToken;

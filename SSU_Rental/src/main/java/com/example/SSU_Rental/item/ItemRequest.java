@@ -6,14 +6,13 @@ import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Data
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemRequest {
 
 
@@ -26,4 +25,10 @@ public class ItemRequest {
 
     private List<ImageDTO> imageDTOList = new ArrayList<>();
 
+    @Builder
+    public ItemRequest(String itemName, int price) {
+        this.itemName = itemName;
+        this.price = price;
+
+    }
 }

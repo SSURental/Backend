@@ -1,6 +1,7 @@
 package com.example.SSU_Rental.board;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -51,5 +52,27 @@ public class BoardResponse {
             entity.getContent(), entity.getViews(), entity.getLikes(), entity.getDislikes(),entity.getWarns(),
             entity.getRegDate(), entity.getModDate());
 
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BoardResponse that = (BoardResponse) o;
+        return getViews() == that.getViews() && getLikes() == that.getLikes()
+            && getDislikes() == that.getDislikes() && getWarns() == that.getWarns()
+            && getNickname().equals(that.getNickname()) && getTitle().equals(that.getTitle())
+            && getContent().equals(that.getContent());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getNickname(), getTitle(), getContent(), getViews(), getLikes(),
+            getDislikes(), getWarns());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.SSU_Rental.rental;
 import com.example.SSU_Rental.image.ImageDTO;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +18,14 @@ public class RentalResponse {
 
     private ImageDTO imageDTO;
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
 
     @Builder
-    public RentalResponse(Long id, String nickname,Long itemId ,String itemName,ImageDTO imageDTO,LocalDateTime startDate,
-        LocalDateTime endDate) {
+    public RentalResponse(Long id, String nickname,Long itemId ,String itemName,ImageDTO imageDTO,LocalDate startDate,
+        LocalDate endDate) {
         this.id = id;
         this.nickname = nickname;
         this.itemId = itemId;

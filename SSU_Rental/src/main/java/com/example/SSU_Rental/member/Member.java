@@ -1,10 +1,7 @@
 package com.example.SSU_Rental.member;
 
-import static com.example.SSU_Rental.exception.ErrorMessage.FORBIDDEN_ERROR;
-import static com.example.SSU_Rental.exception.ErrorMessage.UNAUTHORIZED_ERROR;
-
 import com.example.SSU_Rental.common.Group;
-import com.example.SSU_Rental.exception.CustomException;
+import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.MemberImage;
 import com.example.SSU_Rental.login.Session;
 import com.example.SSU_Rental.member.MemberEditor.MemberEditorBuilder;
@@ -87,7 +84,12 @@ public class Member {
 
     private void addMemberImage(MemberImage memberImage) {
         this.memberImage = memberImage;
-        memberImage.addMember(this);
+    }
+
+    private void validate(Member loginMember) {
+        if (this.id != loginMember.getId()) {
+            throw new ForbiddenException();
+        }
     }
 
 
@@ -97,7 +99,8 @@ public class Member {
             .memberImage(memberImage);
     }
 
-    public void edit(MemberEditor memberEditor) {
+    public void edit(MemberEditor memberEditor,Member loginMember) {
+        validate(loginMember);
         this.name = memberEditor.getName();
         this.memberImage = memberEditor.getMemberImage();
     }
@@ -112,9 +115,5 @@ public class Member {
         return session.getAccessToken();
     }
 
-    public void validate(Member loginMember) {
-        if (this.id != loginMember.getId()) {
-            throw new CustomException(FORBIDDEN_ERROR);
-        }
-    }
+
 }

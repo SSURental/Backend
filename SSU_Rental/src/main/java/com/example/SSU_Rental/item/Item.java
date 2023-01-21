@@ -2,20 +2,33 @@ package com.example.SSU_Rental.item;
 
 import com.example.SSU_Rental.common.BaseEntity;
 import com.example.SSU_Rental.common.Group;
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.exception.BadRequestException;
+import com.example.SSU_Rental.exception.ConflictException;
+import com.example.SSU_Rental.exception.ForbiddenException;
 import com.example.SSU_Rental.image.ItemImage;
 import com.example.SSU_Rental.item.ItemEditor.ItemEditorBuilder;
 import com.example.SSU_Rental.member.Member;
+import com.example.SSU_Rental.rental.Rental;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 
 @Getter
@@ -50,15 +63,18 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
 
+    private boolean isDeleted;
+
     @Builder
     public Item(Long id, String itemName, Group group,
-        ItemStatus status, int price, Member member,List<ItemImage> itemImages) {
+        ItemStatus status, int price, Member member,boolean isDeleted) {
         this.id = id;
         this.itemName = itemName;
         this.itemGroup = group;
         this.status = status;
         this.price = price;
         this.member = member;
+        this.isDeleted = isDeleted;
     }
 
     public static Item createItem(ItemRequest itemRequest, Member member) {
@@ -68,6 +84,7 @@ public class Item extends BaseEntity {
             .group(member.getMemberGroup())
             .status(ItemStatus.AVAILABLE)
             .member(member)
+            .isDeleted(false)
             .build();
 
         List<ItemImage> itemImages = itemRequest.getImageDTOList().stream().map(dto -> {
@@ -87,9 +104,9 @@ public class Item extends BaseEntity {
         itemImage.addItem(this);
     }
 
-    public void validate(Member member){
+    private void validate(Member member){
         if(this.member.getId()!=member.getId())
-            throw new CustomException((ErrorMessage.FORBIDDEN_ERROR));
+            throw new ForbiddenException();
     }
 
 
@@ -101,33 +118,46 @@ public class Item extends BaseEntity {
     }
 
 
-    public void edit(ItemEditor itemEditor) {
+    public void edit(ItemEditor itemEditor,Member loginMember) {
+        validate(loginMember);
         this.itemName = itemEditor.getItemName();
         this.price = itemEditor.getPrice();
         this.itemImages.clear();
         this.itemImages.addAll(itemEditor.getItemImages());
     }
 
+    public void delete(Member loginMember){
+        validate(loginMember);
+//        if(this.isDeleted==true) throw new AlreadyDeletedException(); 이미 리포지터리에서 조회할 떄 삭제 여부를 검사한다.
+        this.isDeleted = true;
+    }
 
-    public void rental(Member member) {
 
-        if(this.member.getId()==member.getId()){
-            throw new IllegalArgumentException("자신의 물품은 빌릴 수는 없습니다.");
+    public Rental rental(Member loginMember) {
+
+        if(this.member.getId()==loginMember.getId()||status!=ItemStatus.AVAILABLE){
+            throw new ConflictException();
         }
 
-        if(status!=ItemStatus.AVAILABLE){
-            throw new IllegalArgumentException("이미 렌탈중인 아이템");
-        }else {
             this.status = ItemStatus.LOAN;
-        }
+
+
+        return Rental.builder()
+            .member(loginMember)
+            .item(this)
+            .startDate(LocalDate.now())
+            .endDate(LocalDate.now().plusDays(7))
+            .isDeleted(false)
+            .build();
 
     }
 
-    public void returnItem() {
+    public void returnItem(Rental rental,Member loginMember) {
 
         if(this.status!=ItemStatus.LOAN){
-            throw new IllegalArgumentException("에러 입니다.");
+            throw new BadRequestException();
         }else {
+            rental.delete(loginMember,this);
             this.status = ItemStatus.AVAILABLE;
         }
     }

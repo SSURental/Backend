@@ -1,22 +1,24 @@
 package com.example.SSU_Rental.boardrp;
 
 
-import static com.example.SSU_Rental.exception.ErrorMessage.*;
-
 import com.example.SSU_Rental.board.Board;
-import com.example.SSU_Rental.board.BoardEditor;
-import com.example.SSU_Rental.board.BoardRequest;
 import com.example.SSU_Rental.boardrp.BoardrpEditor.BoardrpEditorBuilder;
 import com.example.SSU_Rental.common.BaseEntity;
-import com.example.SSU_Rental.exception.CustomException;
-import com.example.SSU_Rental.exception.ErrorMessage;
+import com.example.SSU_Rental.exception.BadRequestException;
+import com.example.SSU_Rental.exception.ForbiddenException;
+import com.example.SSU_Rental.exception.notfound.BoardrpNotFound;
 import com.example.SSU_Rental.member.Member;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,32 +42,37 @@ public class Boardrp extends BaseEntity {
     @Column
     private String content;
 
+    private boolean isDeleted;
+
 
     @Builder
-    public Boardrp(Long id, Board board, Member member, String content) {
+    public Boardrp(Long id, Board board, Member member, String content,boolean isDeleted) {
         this.id = id;
         this.board = board;
         this.member = member;
         this.content = content;
+        this.isDeleted = isDeleted;
     }
 
     public static Boardrp createBoardrp(Board board,Member member, BoardrpRequest boardrpRequest){
-        return Boardrp.builder()
+        Boardrp boardrp = Boardrp.builder()
             .board(board)
             .member(member)
             .content(boardrpRequest.getContent())
+            .isDeleted(false)
             .build();
+        board.addBoard(boardrp);
+        return boardrp;
     }
 
-    public void validate(Member member,Board board){
-
+    private void validate(Member member,Board board){
 
         if(this.member.getId()!=member.getId()){
-            throw new CustomException((FORBIDDEN_ERROR));
+            throw new ForbiddenException();
         }
 
         if(this.board.getId()!=board.getId()){
-            throw new IllegalArgumentException("댓글 아이디 혹은 게시글 아이디가 잘못되었습니다.");
+            throw new BoardrpNotFound();
         }
     }
 
@@ -75,7 +82,13 @@ public class Boardrp extends BaseEntity {
             .content(this.content);
     }
 
-    public void edit(BoardrpEditor editor){
+    public void edit(BoardrpEditor editor,Member loginMember,Board board){
+        validate(loginMember,board);
         this.content = editor.getContent();
+    }
+
+    public void delete(Member loginMember,Board board){
+        validate(loginMember,board);
+        this.isDeleted = true;
     }
 }

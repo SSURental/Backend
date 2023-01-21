@@ -1,6 +1,7 @@
 package com.example.SSU_Rental.login;
 
 import java.time.Duration;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity login(@RequestBody @Valid LoginDTO loginDTO) {
 
         String accessToken = loginService.login(loginDTO);
         ResponseCookie responseCookie = ResponseCookie.from("SESSION", accessToken)
