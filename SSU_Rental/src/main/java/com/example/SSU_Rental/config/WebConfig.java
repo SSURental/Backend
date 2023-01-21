@@ -14,9 +14,10 @@ public class WebConfig implements WebMvcConfigurer {
 
 
     private final SessionRepository sessionRepository;
+    private final AppConfig appConfig;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginArgumentResolver(sessionRepository));
+        resolvers.add(new LoginArgumentResolver(sessionRepository,appConfig));
     }
 }

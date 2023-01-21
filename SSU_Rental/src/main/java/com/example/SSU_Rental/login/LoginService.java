@@ -16,14 +16,14 @@ public class LoginService {
 
 
     @Transactional
-    public String login(LoginDTO loginDTO){
+    public Long login(LoginDTO loginDTO){
 
         Member member = memberRepository.findByLoginIdAndPassword(loginDTO.getLoginId(),
                 loginDTO.getPassword())
             .orElseThrow(() -> new MemberNotFound());
 
-        String accessToken = member.addSession();
-        return accessToken;
+//        String accessToken = member.addSession();
+        return member.getId();
     }
 
 }
